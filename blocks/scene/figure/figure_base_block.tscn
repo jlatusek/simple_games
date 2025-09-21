@@ -1,0 +1,35 @@
+[gd_scene load_steps=3 format=3 uid="uid://dnv7737oin8l7"]
+
+[ext_resource type="Script" uid="uid://c64s5wx3ws6jq" path="res://scene/figure/figure_base_block.gd" id="1_8f1uv"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wp4xf"]
+size = Vector2(40, 40)
+
+[node name="square" type="Area2D"]
+script = ExtResource("1_8f1uv")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+metadata/_edit_use_anchors_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_wp4xf")
+
+[node name="botom_ray" type="RayCast2D" parent="."]
+target_position = Vector2(0, 21)
+collide_with_areas = true
+
+[node name="left_ray" type="RayCast2D" parent="."]
+target_position = Vector2(-40, 0)
+collide_with_areas = true
+
+[node name="right_ray" type="RayCast2D" parent="."]
+target_position = Vector2(40, 0)
+collide_with_areas = true
+
+[node name="up_ray" type="RayCast2D" parent="."]
+target_position = Vector2(0, -40)
+collide_with_areas = true
