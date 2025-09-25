@@ -1,14 +1,23 @@
 extends Node2D
 
-@onready var square = preload("res://scene/figure/figure_base_block.tscn")
-@onready var cross = preload("res://scene/figure/cross.tscn")
+var tets = []
+var rng = RandomNumberGenerator.new()
 
-var shape_choose = 0
-var odd_even_line = 0
+func _init() -> void:
+	tets = [
+		#preload("res://scene/figure/tet_i.tscn"),
+		preload("res://scene/figure/tet_j.tscn"),
+		#preload("res://scene/figure/tet_l.tscn"),
+		#preload("res://scene/figure/tet_o.tscn"),
+		#preload("res://scene/figure/tet_s.tscn"),
+		#preload("res://scene/figure/tet_t.tscn"),
+		#preload("res://scene/figure/tet_z.tscn"),
+	]
+	
+	
 
 func _on_timer_timeout() -> void:
-	for cnt in range(odd_even_line, Config.PLAYAREA_BLOCK_WIDTH, 2):
-		var obj = square.instantiate()
-		obj.global_position = Vector2(60 + 40 * cnt, 20)
-		get_tree().root.add_child.call_deferred(obj)
-	odd_even_line = (odd_even_line + 1) % 2
+	var figure = rng.randi_range(0, len(tets)-1)
+	var obj = tets[figure].instantiate()
+	obj.global_position = Vector2(Config.SCENE_WIDTH/2, 20)
+	get_tree().root.add_child.call_deferred(obj)

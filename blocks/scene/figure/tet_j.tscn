@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://0lf0arxij4ex"]
+
+[ext_resource type="PackedScene" uid="uid://dnv7737oin8l7" path="res://scene/figure/tet.tscn" id="1_wi3x7"]
+
+[node name="tet_j" type="Node2D"]
+
+[node name="tet2" parent="." instance=ExtResource("1_wi3x7")]
+
+[node name="tet" parent="." instance=ExtResource("1_wi3x7")]
+position = Vector2(0, 40)
+
+[node name="tet3" parent="." instance=ExtResource("1_wi3x7")]
+position = Vector2(0, 80)
+
+[node name="tet4" parent="." instance=ExtResource("1_wi3x7")]
+position = Vector2(-40, 80)

@@ -1,7 +1,7 @@
 [gd_resource type="TileSet" load_steps=4 format=3 uid="uid://civeoi3ynvfjb"]
 
 [ext_resource type="PackedScene" uid="uid://cl4rvslg3hi8d" path="res://scene/square_scene.tscn" id="1_ignw2"]
-[ext_resource type="PackedScene" uid="uid://dnv7737oin8l7" path="res://scene/figure/figure_base_block.tscn" id="2_5gs2b"]
+[ext_resource type="PackedScene" uid="uid://dnv7737oin8l7" path="res://scene/figure/tet.tscn" id="2_5gs2b"]
 
 [sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_brvut"]
 scenes/3/scene = ExtResource("1_ignw2")
