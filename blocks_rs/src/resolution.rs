@@ -15,10 +15,9 @@ pub struct Resolution {
 }
 
 fn setup_resolution(mut commands: Commands, window_query: Query<&Window>) {
-    let window = window_query.single();
-    let window = window.expect("Window not found");
+    let window = window_query.single().expect("Window not found");
     commands.insert_resource(Resolution {
-        screen_dimensions: Vec2::new(window.width(), window.width()),
+        screen_dimensions: Vec2::new(window.width(), window.height()),
         pixel_ratio: 4.0,
     });
 }

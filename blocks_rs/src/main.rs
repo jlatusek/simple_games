@@ -1,5 +1,7 @@
 use bevy::{prelude::*, window::WindowResolution};
 
+mod camera;
+mod cube;
 mod game;
 mod resolution;
 mod sprite;
@@ -12,7 +14,7 @@ fn main() {
                 primary_window: Some(Window {
                     title: String::from("blocks"),
                     position: WindowPosition::Centered(MonitorSelection::Primary),
-                    resolution: WindowResolution::new(512, 512),
+                    resolution: WindowResolution::new(640, 800),
                     ..Default::default()
                 }),
                 ..Default::default()
