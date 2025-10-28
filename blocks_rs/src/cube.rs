@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::resolution;
+use crate::{resolution, sprite};
 
 pub struct CubePlugin;
 
@@ -12,23 +12,12 @@ impl Plugin for CubePlugin {
 
 fn setup_cube(
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    sprites: Res<sprite::GameSprites>,
     resolution: Res<resolution::Resolution>,
 ) {
-    let cube_shape = meshes.add(Rectangle::new(40.0, 40.0));
-    println!(
-        "{} x {}",
-        resolution.screen_dimensions[0], resolution.screen_dimensions[1]
-    );
     commands.spawn((
-        Mesh2d(cube_shape),
-        MeshMaterial2d(materials.add(Color::Srgba(Srgba {
-            red: 1.0,
-            green: 0.0,
-            blue: 0.0,
-            alpha: 1.0,
-        }))),
+        sprites.play_cube.shape.clone(),
+        sprites.play_cube.material.clone(),
         Transform::from_xyz(0.0, resolution.screen_dimensions[1] / 2.0, 0.0),
     ));
 }
