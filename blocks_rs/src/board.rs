@@ -1,42 +1,58 @@
 use bevy::prelude::*;
 
+use crate::block::{BaseBlock, BaseBlockType};
 use crate::{config, sprite};
+
 pub struct BoardPlugin;
 
 #[derive(Resource)]
 struct Board {
     pub height: usize,
     pub width: usize,
-    pub matrix: Vec<Vec<Option<Entity>>>,
+    pub matrix: Vec<Vec<BaseBlock>>,
 }
 
 impl Plugin for BoardPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(PostStartup, setup_matrix)
+        app.add_systems(PostStartup, setup_board)
             .add_systems(FixedUpdate, draw);
     }
 }
 
 #[derive(Bundle)]
 struct BoardBlockBundle {
-    mesh2d: Mesh2d,
+    mesh: Mesh2d,
     material: MeshMaterial2d<ColorMaterial>,
     transform: Transform,
+    visibility: Visibility,
 }
 
 impl BoardBlockBundle {
-    fn new(x: &f32, y: &f32, sprites: &Res<sprite::GameSprites>) -> Self {
+    fn new(position: &Vec2, sprites: &Res<sprite::GameSprites>, base_block: &BaseBlock) -> Self {
+        let (mesh, material, visibility) = match base_block.btype {
+            BaseBlockType::Tetroid => (
+                sprites.play_cube.shape.clone(),
+                sprites.play_cube.material.clone(),
+                Visibility::Hidden,
+            ),
+            BaseBlockType::Board => (
+                sprites.env_cube.shape.clone(),
+                sprites.env_cube.material.clone(),
+                Visibility::Visible,
+            ),
+        };
         Self {
-            mesh2d: sprites.env_cube.shape.clone(),
-            material: sprites.env_cube.material.clone(),
-            transform: Transform::from_xyz(*x, *y, 0.0),
+            mesh,
+            material,
+            visibility,
+            transform: Transform::from_xyz(position.x, position.y, 0.0),
         }
     }
 
     fn add_entry(self: &Self) {}
 }
 
-fn setup_matrix(
+fn setup_board(
     mut commands: Commands,
     config: Res<config::Configuration>,
     sprites: Res<sprite::GameSprites>,
@@ -44,33 +60,33 @@ fn setup_matrix(
     let cols = (config.window.width / config.block.center_space).floor() as usize;
     let rows = (config.window.height / config.block.center_space).floor() as usize;
 
-    let matrix = vec![vec![None; cols]; rows];
+    let mut matrix = vec![vec![BaseBlock::default(); cols]; rows];
+
+    for (r, row) in matrix.iter_mut().enumerate() {
+        for (c, obj) in row.iter_mut().enumerate() {
+            obj.position.x = c as f32;
+            obj.position.y = r as f32;
+            if r != rows - 1 && c != 0 && c != cols - 1 {
+                obj.btype = BaseBlockType::Tetroid
+            }
+        }
+    }
+
+    for (r, row) in matrix.iter_mut().enumerate() {
+        for (c, obj) in row.iter_mut().enumerate() {
+            let glob_cord = obj.board_cord_to_global(&config);
+            let id = commands
+                .spawn(BoardBlockBundle::new(&glob_cord, &sprites, &obj))
+                .id();
+            obj.entity = Some(id);
+        }
+    }
+
     commands.insert_resource(Board {
         height: rows,
         width: cols,
         matrix,
     });
-
-    for r in (-(rows as i32) / 2)..((rows as i32) / 2) {
-        commands.spawn(BoardBlockBundle::new(
-            &(-config.window.width / 2.0 + config.block.center_space / 2.0),
-            &(r as f32 * config.block.center_space + config.block.center_space / 2.0),
-            &sprites,
-        ));
-        commands.spawn(BoardBlockBundle::new(
-            &(config.window.width / 2.0 - config.block.center_space / 2.0),
-            &(r as f32 * config.block.center_space + config.block.center_space / 2.0),
-            &sprites,
-        ));
-    }
-
-    for c in (-(cols as i32) / 2 + 1)..((cols as i32) / 2 - 1) {
-        commands.spawn(BoardBlockBundle::new(
-            &(c as f32 * config.block.center_space + config.block.center_space / 2.0),
-            &(-config.window.height / 2.0 + config.block.center_space / 2.0),
-            &sprites,
-        ));
-    }
 }
 
 fn draw(mut commands: Commands) {}

@@ -23,16 +23,6 @@ fn setup_tetroid(
     sprites: Res<sprite::GameSprites>,
     config: Res<config::Configuration>,
 ) {
-    commands.spawn((
-        BaseBlock { x: 0, y: 0 },
-        sprites.play_cube.shape.clone(),
-        sprites.play_cube.material.clone(),
-        Transform::from_xyz(
-            config.block.center_space / 2.0,
-            config.window.height / 2.0 - config.block.center_space / 2.0,
-            0.0,
-        ),
-    ));
     commands.insert_resource(BlocksMoveTimer {
         timer: Timer::from_seconds(config.block.move_delay, TimerMode::Repeating),
     });
@@ -46,7 +36,7 @@ fn update_cube(
 ) {
     blocks_timer.timer.tick(time.delta());
     if blocks_timer.timer.is_finished() {
-        for (entity, alien, mut transform) in block_query.iter_mut() {
+        for (entity, block, mut transform) in block_query.iter_mut() {
             transform.translation.y -= config.block.center_space;
         }
     }
