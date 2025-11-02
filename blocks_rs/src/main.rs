@@ -1,10 +1,10 @@
 use bevy::{prelude::*, window::WindowResolution};
 
 mod camera;
+mod config;
 mod cube;
 mod game;
 mod matrix;
-mod resolution;
 mod sprite;
 
 fn main() {

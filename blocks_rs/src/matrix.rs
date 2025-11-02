@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::resolution;
+use crate::config;
 pub struct MatrixPlugin;
 
 impl Plugin for MatrixPlugin {
@@ -9,4 +9,4 @@ impl Plugin for MatrixPlugin {
     }
 }
 
-fn setup_matrix(mut commands: Commands, resolution: Res<resolution::Resolution>) {}
+fn setup_matrix(mut commands: Commands, resolution: Res<config::Configuration>) {}

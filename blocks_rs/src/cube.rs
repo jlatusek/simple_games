@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{resolution, sprite};
+use crate::{config, sprite};
 
 pub struct CubePlugin;
 
@@ -13,11 +13,11 @@ impl Plugin for CubePlugin {
 fn setup_cube(
     mut commands: Commands,
     sprites: Res<sprite::GameSprites>,
-    resolution: Res<resolution::Resolution>,
+    config: Res<config::Configuration>,
 ) {
     commands.spawn((
         sprites.play_cube.shape.clone(),
         sprites.play_cube.material.clone(),
-        Transform::from_xyz(0.0, resolution.screen_dimensions[1] / 2.0, 0.0),
+        Transform::from_xyz(0.0, config.window.height / 2.0, 0.0),
     ));
 }
