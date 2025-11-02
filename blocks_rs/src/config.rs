@@ -30,16 +30,18 @@ impl Default for WindowConfig {
 }
 
 #[derive(Debug)]
-pub struct CubeConfig {
+pub struct BlockConfig {
     pub size: f32,
     pub center_space: f32,
+    pub move_delay: f32,
 }
 
-impl Default for CubeConfig {
+impl Default for BlockConfig {
     fn default() -> Self {
         Self {
             size: 34.0,
             center_space: 40.0,
+            move_delay: 0.5,
         }
     }
 }
@@ -47,14 +49,14 @@ impl Default for CubeConfig {
 #[derive(Resource, Debug)]
 pub struct Configuration {
     pub window: WindowConfig,
-    pub cube: CubeConfig,
+    pub block: BlockConfig,
 }
 
 impl Default for Configuration {
     fn default() -> Self {
         Self {
             window: WindowConfig::default(),
-            cube: CubeConfig::default(),
+            block: BlockConfig::default(),
         }
     }
 }

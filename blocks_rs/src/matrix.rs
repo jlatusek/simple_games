@@ -20,8 +20,8 @@ fn setup_matrix(
     config: Res<config::Configuration>,
     sprites: Res<sprite::GameSprites>,
 ) {
-    let cols = (config.window.width / config.cube.center_space).floor() as usize;
-    let rows = (config.window.height / config.cube.center_space).floor() as usize;
+    let cols = (config.window.width / config.block.center_space).floor() as usize;
+    let rows = (config.window.height / config.block.center_space).floor() as usize;
 
     let matrix = vec![vec![0i32; cols]; rows];
     commands.insert_resource(Matrix { matrix });
@@ -31,8 +31,8 @@ fn setup_matrix(
             sprites.env_cube.shape.clone(),
             sprites.env_cube.material.clone(),
             Transform::from_xyz(
-                -config.window.width / 2.0 + config.cube.center_space / 2.0,
-                r as f32 * config.cube.center_space + config.cube.center_space / 2.0,
+                -config.window.width / 2.0 + config.block.center_space / 2.0,
+                r as f32 * config.block.center_space + config.block.center_space / 2.0,
                 0.0,
             ),
         ));
@@ -40,8 +40,8 @@ fn setup_matrix(
             sprites.env_cube.shape.clone(),
             sprites.env_cube.material.clone(),
             Transform::from_xyz(
-                config.window.width / 2.0 - config.cube.center_space / 2.0,
-                r as f32 * config.cube.center_space + config.cube.center_space / 2.0,
+                config.window.width / 2.0 - config.block.center_space / 2.0,
+                r as f32 * config.block.center_space + config.block.center_space / 2.0,
                 0.0,
             ),
         ));
@@ -52,8 +52,8 @@ fn setup_matrix(
             sprites.env_cube.shape.clone(),
             sprites.env_cube.material.clone(),
             Transform::from_xyz(
-                c as f32 * config.cube.center_space + config.cube.center_space / 2.0,
-                -config.window.height / 2.0 + config.cube.center_space / 2.0,
+                c as f32 * config.block.center_space + config.block.center_space / 2.0,
+                -config.window.height / 2.0 + config.block.center_space / 2.0,
                 0.0,
             ),
         ));

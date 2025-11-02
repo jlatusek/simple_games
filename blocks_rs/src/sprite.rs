@@ -26,7 +26,7 @@ fn setup(
     mut materials: ResMut<Assets<ColorMaterial>>,
     config: Res<Configuration>,
 ) {
-    let cube_shape = Mesh2d(meshes.add(Rectangle::new(config.cube.size, config.cube.size)));
+    let cube_shape = Mesh2d(meshes.add(Rectangle::new(config.block.size, config.block.size)));
     let game_sprites = GameSprites {
         env_cube: Sprite {
             shape: cube_shape.clone(),
