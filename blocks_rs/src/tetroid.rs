@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+use crate::block::BaseBlock;
 use crate::config::Configuration;
 use crate::{config, sprite};
 
@@ -17,16 +18,13 @@ impl Plugin for TetroidPlugin {
     }
 }
 
-#[derive(Component)]
-struct BaseBlock;
-
 fn setup_tetroid(
     mut commands: Commands,
     sprites: Res<sprite::GameSprites>,
     config: Res<config::Configuration>,
 ) {
     commands.spawn((
-        BaseBlock {},
+        BaseBlock { x: 0, y: 0 },
         sprites.play_cube.shape.clone(),
         sprites.play_cube.material.clone(),
         Transform::from_xyz(
