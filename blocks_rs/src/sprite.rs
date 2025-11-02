@@ -1,6 +1,5 @@
+use crate::config::Configuration;
 use bevy::{prelude::*, sprite_render::MeshMaterial2d};
-
-const CUBE_SIZE: f32 = 40.0;
 
 pub struct SpritePlugin;
 
@@ -17,7 +16,7 @@ pub struct GameSprites {
 
 impl Plugin for SpritePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(PreStartup, setup);
+        app.add_systems(Startup, setup);
     }
 }
 
@@ -25,8 +24,9 @@ fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
+    config: Res<Configuration>,
 ) {
-    let cube_shape = Mesh2d(meshes.add(Rectangle::new(CUBE_SIZE, CUBE_SIZE)));
+    let cube_shape = Mesh2d(meshes.add(Rectangle::new(config.cube.size, config.cube.size)));
     let game_sprites = GameSprites {
         env_cube: Sprite {
             shape: cube_shape.clone(),

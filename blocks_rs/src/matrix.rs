@@ -5,7 +5,7 @@ pub struct MatrixPlugin;
 
 impl Plugin for MatrixPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup_matrix);
+        app.add_systems(PostStartup, setup_matrix);
     }
 }
 

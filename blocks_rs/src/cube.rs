@@ -6,7 +6,7 @@ pub struct CubePlugin;
 
 impl Plugin for CubePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup_cube);
+        app.add_systems(PostStartup, setup_cube);
     }
 }
 
