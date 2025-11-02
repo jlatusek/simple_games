@@ -30,7 +30,7 @@ fn setup_cube(
         sprites.play_cube.shape.clone(),
         sprites.play_cube.material.clone(),
         Transform::from_xyz(
-            0.0,
+            config.block.center_space / 2.0,
             config.window.height / 2.0 - config.block.center_space / 2.0,
             0.0,
         ),

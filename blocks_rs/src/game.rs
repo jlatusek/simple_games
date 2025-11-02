@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{camera, config, cube, matrix, sprite};
+use crate::{board, camera, config, cube, sprite};
 
 pub struct GamePlugin;
 
@@ -11,7 +11,7 @@ impl Plugin for GamePlugin {
             sprite::SpritePlugin,
             cube::CubePlugin,
             camera::CameraPlugin,
-            matrix::MatrixPlugin,
+            board::BoardPlugin,
         ))
         .insert_resource(ClearColor(Color::srgb(0.9, 0.9, 0.9)));
     }

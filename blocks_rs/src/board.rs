@@ -1,14 +1,14 @@
 use bevy::prelude::*;
 
 use crate::{config, sprite};
-pub struct MatrixPlugin;
+pub struct BoardPlugin;
 
 #[derive(Resource)]
-struct Matrix {
+struct Board {
     matrix: Vec<Vec<i32>>,
 }
 
-impl Plugin for MatrixPlugin {
+impl Plugin for BoardPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(PostStartup, setup_matrix)
             .add_systems(FixedUpdate, draw);
@@ -24,7 +24,7 @@ fn setup_matrix(
     let rows = (config.window.height / config.block.center_space).floor() as usize;
 
     let matrix = vec![vec![0i32; cols]; rows];
-    commands.insert_resource(Matrix { matrix });
+    commands.insert_resource(Board { matrix });
 
     for r in (-(rows as i32) / 2)..((rows as i32) / 2) {
         commands.spawn((
