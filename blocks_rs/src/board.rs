@@ -18,13 +18,13 @@ impl Plugin for BoardPlugin {
 }
 
 #[derive(Bundle)]
-struct BoardBlocks {
+struct BoardBlock {
     mesh2d: Mesh2d,
     material: MeshMaterial2d<ColorMaterial>,
     transform: Transform,
 }
 
-impl BoardBlocks {
+impl BoardBlock {
     fn new(x: &f32, y: &f32, sprites: &Res<sprite::GameSprites>) -> Self {
         Self {
             mesh2d: sprites.env_cube.shape.clone(),
@@ -50,12 +50,12 @@ fn setup_matrix(
     });
 
     for r in (-(rows as i32) / 2)..((rows as i32) / 2) {
-        commands.spawn(BoardBlocks::new(
+        commands.spawn(BoardBlock::new(
             &(-config.window.width / 2.0 + config.block.center_space / 2.0),
             &(r as f32 * config.block.center_space + config.block.center_space / 2.0),
             &sprites,
         ));
-        commands.spawn(BoardBlocks::new(
+        commands.spawn(BoardBlock::new(
             &(config.window.width / 2.0 - config.block.center_space / 2.0),
             &(r as f32 * config.block.center_space + config.block.center_space / 2.0),
             &sprites,
@@ -63,7 +63,7 @@ fn setup_matrix(
     }
 
     for c in (-(cols as i32) / 2 + 1)..((cols as i32) / 2 - 1) {
-        commands.spawn(BoardBlocks::new(
+        commands.spawn(BoardBlock::new(
             &(c as f32 * config.block.center_space + config.block.center_space / 2.0),
             &(-config.window.height / 2.0 + config.block.center_space / 2.0),
             &sprites,
