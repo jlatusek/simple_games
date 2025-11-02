@@ -1,12 +1,63 @@
 use bevy::prelude::*;
 
-use crate::config;
+use crate::{config, sprite};
 pub struct MatrixPlugin;
+
+#[derive(Resource)]
+struct Matrix {
+    matrix: Vec<Vec<i32>>,
+}
 
 impl Plugin for MatrixPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(PostStartup, setup_matrix);
+        app.add_systems(PostStartup, setup_matrix)
+            .add_systems(FixedUpdate, draw);
     }
 }
 
-fn setup_matrix(mut commands: Commands, resolution: Res<config::Configuration>) {}
+fn setup_matrix(
+    mut commands: Commands,
+    config: Res<config::Configuration>,
+    sprites: Res<sprite::GameSprites>,
+) {
+    let cols = (config.window.width / config.cube.center_space).floor() as usize;
+    let rows = (config.window.height / config.cube.center_space).floor() as usize;
+
+    let matrix = vec![vec![0i32; cols]; rows];
+    commands.insert_resource(Matrix { matrix });
+
+    for r in (-(rows as i32) / 2)..((rows as i32) / 2) {
+        commands.spawn((
+            sprites.env_cube.shape.clone(),
+            sprites.env_cube.material.clone(),
+            Transform::from_xyz(
+                -config.window.width / 2.0 + config.cube.center_space / 2.0,
+                r as f32 * config.cube.center_space + config.cube.center_space / 2.0,
+                0.0,
+            ),
+        ));
+        commands.spawn((
+            sprites.env_cube.shape.clone(),
+            sprites.env_cube.material.clone(),
+            Transform::from_xyz(
+                config.window.width / 2.0 - config.cube.center_space / 2.0,
+                r as f32 * config.cube.center_space + config.cube.center_space / 2.0,
+                0.0,
+            ),
+        ));
+    }
+
+    for c in (-(cols as i32) / 2 + 1)..((cols as i32) / 2 - 1) {
+        commands.spawn((
+            sprites.env_cube.shape.clone(),
+            sprites.env_cube.material.clone(),
+            Transform::from_xyz(
+                c as f32 * config.cube.center_space + config.cube.center_space / 2.0,
+                -config.window.height / 2.0 + config.cube.center_space / 2.0,
+                0.0,
+            ),
+        ));
+    }
+}
+
+fn draw(mut commands: Commands) {}
