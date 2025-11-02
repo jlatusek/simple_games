@@ -5,7 +5,9 @@ pub struct BoardPlugin;
 
 #[derive(Resource)]
 struct Board {
-    matrix: Vec<Vec<i32>>,
+    pub height: usize,
+    pub width: usize,
+    pub matrix: Vec<Vec<Option<Entity>>>,
 }
 
 impl Plugin for BoardPlugin {
@@ -23,8 +25,12 @@ fn setup_matrix(
     let cols = (config.window.width / config.block.center_space).floor() as usize;
     let rows = (config.window.height / config.block.center_space).floor() as usize;
 
-    let matrix = vec![vec![0i32; cols]; rows];
-    commands.insert_resource(Board { matrix });
+    let matrix = vec![vec![None; cols]; rows];
+    commands.insert_resource(Board {
+        height: rows,
+        width: cols,
+        matrix,
+    });
 
     for r in (-(rows as i32) / 2)..((rows as i32) / 2) {
         commands.spawn((

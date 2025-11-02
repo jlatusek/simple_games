@@ -3,9 +3,9 @@ use bevy::{prelude::*, window::WindowResolution};
 mod board;
 mod camera;
 mod config;
-mod cube;
 mod game;
 mod sprite;
+mod tetroid;
 
 fn main() {
     println!("Blocks, blocks everywhere :D !!!");

@@ -3,16 +3,16 @@ use bevy::prelude::*;
 use crate::config::Configuration;
 use crate::{config, sprite};
 
-pub struct CubePlugin;
+pub struct TetroidPlugin;
 
 #[derive(Resource)]
 struct BlocksMoveTimer {
     timer: Timer,
 }
 
-impl Plugin for CubePlugin {
+impl Plugin for TetroidPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(PostStartup, setup_cube)
+        app.add_systems(PostStartup, setup_tetroid)
             .add_systems(FixedUpdate, update_cube);
     }
 }
@@ -20,7 +20,7 @@ impl Plugin for CubePlugin {
 #[derive(Component)]
 struct BaseBlock;
 
-fn setup_cube(
+fn setup_tetroid(
     mut commands: Commands,
     sprites: Res<sprite::GameSprites>,
     config: Res<config::Configuration>,
