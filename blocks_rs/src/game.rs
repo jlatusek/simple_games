@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{board, camera, config, sprite, tetroid};
+use crate::{board, camera, config, sprite};
 
 pub struct GamePlugin;
 
@@ -9,7 +9,7 @@ impl Plugin for GamePlugin {
         app.add_plugins((
             config::ConfigPlugin,
             sprite::SpritePlugin,
-            tetroid::TetroidPlugin,
+            // tetroid::TetroidPlugin,
             camera::CameraPlugin,
             board::BoardPlugin,
         ))
