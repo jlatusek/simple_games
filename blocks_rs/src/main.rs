@@ -5,7 +5,6 @@ mod board;
 mod camera;
 mod config;
 mod game;
-mod sprite;
 mod tetroid;
 
 fn main() {

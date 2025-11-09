@@ -20,7 +20,7 @@ impl Plugin for TetroidPlugin {
 
 fn setup_tetroid(
     mut commands: Commands,
-    sprites: Res<sprite::GameSprites>,
+    sprites: Res<config::GameSprites>,
     config: Res<config::Configuration>,
 ) {
     commands.insert_resource(BlocksMoveTimer {

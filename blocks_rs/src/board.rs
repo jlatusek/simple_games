@@ -1,12 +1,12 @@
 use bevy::prelude::*;
 
 use crate::block::{BaseBlock, BaseBlockType};
-use crate::{config, sprite};
+use crate::config;
 
 pub struct BoardPlugin;
 
 #[derive(Resource)]
-struct Board {
+pub struct Board {
     pub height: usize,
     pub width: usize,
     pub matrix: Vec<Vec<BaseBlock>>,
@@ -14,13 +14,13 @@ struct Board {
 
 impl Plugin for BoardPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(PostStartup, setup_board)
+        app.add_systems(Startup, setup_board)
             .add_systems(FixedUpdate, draw);
     }
 }
 
 #[derive(Bundle)]
-struct BoardBlockBundle {
+pub struct BoardBlockBundle {
     mesh: Mesh2d,
     material: MeshMaterial2d<ColorMaterial>,
     transform: Transform,
@@ -28,7 +28,7 @@ struct BoardBlockBundle {
 }
 
 impl BoardBlockBundle {
-    fn new(position: &Vec2, sprites: &Res<sprite::GameSprites>, base_block: &BaseBlock) -> Self {
+    fn new(position: &Vec2, sprites: &Res<config::GameSprites>, base_block: &BaseBlock) -> Self {
         let (mesh, material, visibility) = match base_block.btype {
             BaseBlockType::Tetroid => (
                 sprites.play_cube.shape.clone(),
@@ -55,7 +55,7 @@ impl BoardBlockBundle {
 fn setup_board(
     mut commands: Commands,
     config: Res<config::Configuration>,
-    sprites: Res<sprite::GameSprites>,
+    sprites: Res<config::GameSprites>,
 ) {
     let cols = (config.window.width / config.block.center_space).floor() as usize;
     let rows = (config.window.height / config.block.center_space).floor() as usize;

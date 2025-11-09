@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy::{prelude::*, sprite_render::MeshMaterial2d};
 
 pub struct ConfigPlugin;
 
@@ -61,17 +62,57 @@ impl Default for Configuration {
     }
 }
 
+pub struct Sprite {
+    pub shape: Mesh2d,
+    pub material: MeshMaterial2d<ColorMaterial>,
+}
+
+#[derive(Resource)]
+pub struct GameSprites {
+    pub env_cube: Sprite,
+    pub play_cube: Sprite,
+}
+
 impl Plugin for ConfigPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(PreStartup, add_project_configuration);
+        app.add_systems(PreStartup, setup);
     }
 }
 
-fn add_project_configuration(mut commands: Commands, window_query: Query<&Window>) {
+fn setup(
+    mut commands: Commands,
+    window_query: Query<&Window>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
     let window = window_query.single().expect("Window not found");
     let config = Configuration {
         window: window.into(),
         ..Default::default()
     };
+
+    let cube_shape = Mesh2d(meshes.add(Rectangle::new(config.block.size, config.block.size)));
+    let game_sprites = GameSprites {
+        env_cube: Sprite {
+            shape: cube_shape.clone(),
+            material: MeshMaterial2d(materials.add(Color::Srgba(Srgba {
+                red: 1.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 1.0,
+            }))),
+        },
+        play_cube: Sprite {
+            shape: cube_shape.clone(),
+            material: MeshMaterial2d(materials.add(Color::Srgba(Srgba {
+                red: 0.0,
+                green: 0.0,
+                blue: 1.0,
+                alpha: 1.0,
+            }))),
+        },
+    };
+
     commands.insert_resource(config);
+    commands.insert_resource(game_sprites);
 }
