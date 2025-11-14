@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::block::{BaseBlock, BaseBlockType};
+use crate::block::{BaseBlock, BlockType, BoardBlock, TetroidBlock};
 use crate::config;
 
 pub struct BoardPlugin;
@@ -9,7 +9,7 @@ pub struct BoardPlugin;
 pub struct Board {
     pub height: usize,
     pub width: usize,
-    pub matrix: Vec<Vec<BaseBlock>>,
+    pub matrix: Vec<Vec<Option<Entity>>>,
 }
 
 impl Plugin for BoardPlugin {
@@ -25,17 +25,23 @@ pub struct BoardBlockBundle {
     material: MeshMaterial2d<ColorMaterial>,
     transform: Transform,
     visibility: Visibility,
+    base_block: BaseBlock,
 }
 
 impl BoardBlockBundle {
-    fn new(position: &Vec2, sprites: &Res<config::GameSprites>, base_block: &BaseBlock) -> Self {
-        let (mesh, material, visibility) = match base_block.btype {
-            BaseBlockType::Tetroid => (
+    fn new(
+        position: &Vec2,
+        sprites: &Res<config::GameSprites>,
+        btype: &BlockType,
+        base_block: BaseBlock,
+    ) -> Self {
+        let (mesh, material, visibility) = match btype {
+            BlockType::Tetroid => (
                 sprites.play_cube.shape.clone(),
                 sprites.play_cube.material.clone(),
                 Visibility::Hidden,
             ),
-            BaseBlockType::Board => (
+            BlockType::Board => (
                 sprites.env_cube.shape.clone(),
                 sprites.env_cube.material.clone(),
                 Visibility::Visible,
@@ -46,6 +52,7 @@ impl BoardBlockBundle {
             material,
             visibility,
             transform: Transform::from_xyz(position.x, position.y, 0.0),
+            base_block,
         }
     }
 
@@ -60,25 +67,28 @@ fn setup_board(
     let cols = (config.window.width / config.block.center_space).floor() as usize;
     let rows = (config.window.height / config.block.center_space).floor() as usize;
 
-    let mut matrix = vec![vec![BaseBlock::default(); cols]; rows];
+    let mut matrix: Vec<Vec<Option<Entity>>> = vec![vec![None; cols]; rows];
 
-    for (r, row) in matrix.iter_mut().enumerate() {
-        for (c, obj) in row.iter_mut().enumerate() {
-            obj.position.x = c as f32;
-            obj.position.y = r as f32;
-            if r != rows - 1 && c != 0 && c != cols - 1 {
-                obj.btype = BaseBlockType::Tetroid
+    for r in 0..rows {
+        for c in 0..cols {
+            let base_block = BaseBlock {
+                position: Vec2::new(c as f32, r as f32),
+                entity: None,
+            };
+            let glob_cord = base_block.board_cord_to_global(&config);
+            let btype = if r != rows - 1 && c != 0 && c != cols - 1 {
+                BlockType::Tetroid
+            } else {
+                BlockType::Board
+            };
+            let bundle = BoardBlockBundle::new(&glob_cord, &sprites, &btype, base_block);
+            // spawn visual bundle and attach the appropriate block component
+            let id = match btype {
+                BlockType::Tetroid => commands.spawn((bundle, TetroidBlock {})),
+                BlockType::Board => commands.spawn((bundle, BoardBlock {})),
             }
-        }
-    }
-
-    for (r, row) in matrix.iter_mut().enumerate() {
-        for (c, obj) in row.iter_mut().enumerate() {
-            let glob_cord = obj.board_cord_to_global(&config);
-            let id = commands
-                .spawn(BoardBlockBundle::new(&glob_cord, &sprites, &obj))
-                .id();
-            obj.entity = Some(id);
+            .id();
+            matrix[r][c] = Some(id);
         }
     }
 

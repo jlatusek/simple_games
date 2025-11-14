@@ -2,22 +2,15 @@ use crate::config::Configuration;
 use bevy::prelude::*;
 
 #[derive(Clone)]
-pub enum BaseBlockType {
-    Board,
+pub enum BlockType {
     Tetroid,
-}
-
-impl Default for BaseBlockType {
-    fn default() -> Self {
-        Self::Board
-    }
+    Board,
 }
 
 #[derive(Component, Clone)]
 pub struct BaseBlock {
     pub position: Vec2,
     pub entity: Option<Entity>,
-    pub btype: BaseBlockType,
 }
 
 impl Default for BaseBlock {
@@ -25,9 +18,12 @@ impl Default for BaseBlock {
         Self {
             position: Vec2::ZERO,
             entity: None,
-            btype: BaseBlockType::default(),
         }
     }
+}
+
+pub trait Block {
+    fn btype(&self) -> BlockType;
 }
 
 impl BaseBlock {
@@ -41,5 +37,28 @@ impl BaseBlock {
                     - config.block.center_space / 2.0,
             )
         }
+    }
+}
+
+#[derive(Component)]
+pub struct BoardBlock {}
+
+impl Block for BoardBlock {
+    fn btype(&self) -> BlockType {
+        BlockType::Board
+    }
+}
+
+#[derive(Component)]
+pub struct TetroidBlock {}
+
+impl Default for TetroidBlock {
+    fn default() -> Self {
+        Self { ..default() }
+    }
+}
+impl Block for TetroidBlock {
+    fn btype(&self) -> BlockType {
+        BlockType::Tetroid
     }
 }

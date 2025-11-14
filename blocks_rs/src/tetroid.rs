@@ -1,8 +1,7 @@
-use bevy::prelude::*;
-
 use crate::block::BaseBlock;
 use crate::config::Configuration;
-use crate::{config, sprite};
+use crate::{board, config};
+use bevy::prelude::*;
 
 pub struct TetroidPlugin;
 
@@ -22,10 +21,15 @@ fn setup_tetroid(
     mut commands: Commands,
     sprites: Res<config::GameSprites>,
     config: Res<config::Configuration>,
+    board: Res<board::Board>,
+    mut query: Query<(&mut Visibility)>,
 ) {
     commands.insert_resource(BlocksMoveTimer {
         timer: Timer::from_seconds(config.block.move_delay, TimerMode::Repeating),
     });
+    let entity = board.matrix[3][3].unwrap();
+    let mut visibility = query.get_mut(entity).unwrap();
+    *visibility = Visibility::Visible;
 }
 
 fn update_cube(
