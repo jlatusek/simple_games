@@ -15,7 +15,7 @@ fn main() {
                 primary_window: Some(Window {
                     title: String::from("blocks"),
                     position: WindowPosition::Centered(MonitorSelection::Primary),
-                    resolution: WindowResolution::new(640, 800),
+                    resolution: WindowResolution::new(600, 800),
                     ..Default::default()
                 }),
                 ..Default::default()
