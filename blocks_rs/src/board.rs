@@ -2,7 +2,6 @@ use bevy::prelude::*;
 
 use crate::block::{BoardBlock, MovingBlock, Position, TetroidBlock};
 use crate::config;
-use crate::config::Configuration;
 
 pub struct BoardPlugin;
 
@@ -80,30 +79,27 @@ fn setup_board(
 fn update_board(
     mut commands: Commands,
     mut moving_block_q: Query<
-        (Entity, &mut Position, &mut Visibility),
+        (Entity, &Position, &mut Visibility),
         (With<TetroidBlock>, With<MovingBlock>),
     >,
-    mut stopped_block_q: Query<
-        (&mut Position, &mut Visibility),
-        (With<TetroidBlock>, Without<MovingBlock>),
-    >,
+    mut stopped_block_q: Query<&mut Visibility, (With<TetroidBlock>, Without<MovingBlock>)>,
     board: Res<Board>,
     time: Res<Time>,
     mut blocks_timer: ResMut<BlocksMoveTimer>,
-    config: Res<Configuration>,
 ) {
     blocks_timer.timer.tick(time.delta());
 
-    if blocks_timer.timer.is_finished() {
-        for (entity, position, mut visibility) in moving_block_q.iter_mut() {
-            let new = board.matrix[position.x][position.y + 1].unwrap();
-            if let Ok((_, mut new_visibility)) = stopped_block_q.get_mut(new) {
-                *visibility = Visibility::Hidden;
-                commands.entity(entity).remove::<MovingBlock>();
+    if !blocks_timer.timer.is_finished() {
+        return;
+    }
+    for (entity, position, mut visibility) in moving_block_q.iter_mut() {
+        let new = board.matrix[position.x][position.y + 1].unwrap();
+        if let Ok(mut next_visibility) = stopped_block_q.get_mut(new) {
+            *visibility = Visibility::Hidden;
+            commands.entity(entity).remove::<MovingBlock>();
 
-                *new_visibility = Visibility::Visible;
-                commands.entity(new).insert(MovingBlock {});
-            }
+            *next_visibility = Visibility::Visible;
+            commands.entity(new).insert(MovingBlock {});
         }
     }
 }

@@ -34,19 +34,11 @@ impl Default for Position {
     }
 }
 
-impl Position {}
-
 #[derive(Component)]
 pub struct BoardBlock {}
 
-#[derive(Component)]
+#[derive(Component, Default)]
 pub struct TetroidBlock {}
-
-impl Default for TetroidBlock {
-    fn default() -> Self {
-        Self { ..default() }
-    }
-}
 
 #[derive(Component)]
 pub struct MovingBlock {}
