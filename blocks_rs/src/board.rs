@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::block::{BaseBlock, BlockType, BoardBlock, TetroidBlock};
+use crate::block::{BaseBlock, BlockType, BoardBlock, Position, TetroidBlock};
 use crate::config;
 
 pub struct BoardPlugin;
@@ -64,19 +64,19 @@ fn setup_board(
     config: Res<config::Configuration>,
     sprites: Res<config::GameSprites>,
 ) {
-    let cols = (config.window.width / config.block.center_space).floor() as usize;
-    let rows = (config.window.height / config.block.center_space).floor() as usize;
+    let x_max = (config.window.width / config.block.center_space).floor() as usize;
+    let y_max = (config.window.height / config.block.center_space).floor() as usize;
 
-    let mut matrix: Vec<Vec<Option<Entity>>> = vec![vec![None; cols]; rows];
+    let mut matrix: Vec<Vec<Option<Entity>>> = vec![vec![None; y_max]; x_max];
 
-    for r in 0..rows {
-        for c in 0..cols {
+    for x in 0..x_max {
+        for y in 0..y_max {
             let base_block = BaseBlock {
-                position: Vec2::new(c as f32, r as f32),
+                position: Position::new(x, y),
                 entity: None,
             };
             let glob_cord = base_block.board_cord_to_global(&config);
-            let btype = if r != rows - 1 && c != 0 && c != cols - 1 {
+            let btype = if y != y_max - 1 && x != 0 && x != x_max - 1 {
                 BlockType::Tetroid
             } else {
                 BlockType::Board
@@ -88,13 +88,13 @@ fn setup_board(
                 BlockType::Board => commands.spawn((bundle, BoardBlock {})),
             }
             .id();
-            matrix[r][c] = Some(id);
+            matrix[x][y] = Some(id);
         }
     }
 
     commands.insert_resource(Board {
-        height: rows,
-        width: cols,
+        height: y_max,
+        width: x_max,
         matrix,
     });
 }

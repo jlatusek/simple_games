@@ -2,6 +2,18 @@ use crate::config::Configuration;
 use bevy::prelude::*;
 
 #[derive(Clone)]
+pub struct Position {
+    pub x: usize,
+    pub y: usize,
+}
+impl Position {
+    pub fn new(x: usize, y: usize) -> Self {
+        Self { x, y }
+    }
+    pub const ZERO: Self = Self { x: 0, y: 0 };
+}
+
+#[derive(Clone)]
 pub enum BlockType {
     Tetroid,
     Board,
@@ -9,14 +21,14 @@ pub enum BlockType {
 
 #[derive(Component, Clone)]
 pub struct BaseBlock {
-    pub position: Vec2,
+    pub position: Position,
     pub entity: Option<Entity>,
 }
 
 impl Default for BaseBlock {
     fn default() -> Self {
         Self {
-            position: Vec2::ZERO,
+            position: Position::ZERO,
             entity: None,
         }
     }
@@ -30,10 +42,11 @@ impl BaseBlock {
     pub fn board_cord_to_global(&self, config: &Res<Configuration>) -> Vec2 {
         {
             Vec2::new(
-                self.position.x * config.block.center_space + config.block.center_space / 2.0
+                self.position.x as f32 * config.block.center_space
+                    + config.block.center_space / 2.0
                     - config.window.width / 2.0,
                 config.window.height / 2.0
-                    - self.position.y * config.block.center_space
+                    - self.position.y as f32 * config.block.center_space
                     - config.block.center_space / 2.0,
             )
         }

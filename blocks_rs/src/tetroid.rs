@@ -1,4 +1,5 @@
 use crate::block::{BaseBlock, TetroidBlock};
+use crate::board::Board;
 use crate::config::Configuration;
 use crate::{board, config};
 use bevy::prelude::*;
@@ -19,7 +20,6 @@ impl Plugin for TetroidPlugin {
 
 fn setup_tetroid(
     mut commands: Commands,
-    sprites: Res<config::GameSprites>,
     config: Res<config::Configuration>,
     board: Res<board::Board>,
     mut query: Query<(&mut Visibility)>,
@@ -33,15 +33,27 @@ fn setup_tetroid(
 }
 
 fn update_cube(
-    mut block_query: Query<(Entity, &BaseBlock, &mut Transform), With<TetroidBlock>>,
+    mut block_query: Query<(&mut BaseBlock, &mut Visibility), With<TetroidBlock>>,
+    board: Res<Board>,
     time: Res<Time>,
     mut blocks_timer: ResMut<BlocksMoveTimer>,
     config: Res<Configuration>,
 ) {
     blocks_timer.timer.tick(time.delta());
+
     if blocks_timer.timer.is_finished() {
-        for (entity, block, mut transform) in block_query.iter_mut() {
-            transform.translation.y -= config.block.center_space;
+        let mut new_visible: Vec<Entity> = Vec::new();
+        for (mut block, mut visibility) in block_query.iter_mut() {
+            if visibility.eq(&Visibility::Visible) {
+                let position = &block.position;
+                new_visible.push(board.matrix[position.x][position.y + 1].unwrap());
+                *visibility = Visibility::Hidden;
+            }
+        }
+
+        for entity in new_visible {
+            let (block, mut visibility) = block_query.get_mut(entity).unwrap();
+            *visibility = Visibility::Visible;
         }
     }
 }
