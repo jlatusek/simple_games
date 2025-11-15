@@ -4,6 +4,7 @@
 
 pub mod board;
 pub mod config;
+pub mod control;
 pub mod tetroid;
 
 // Re-export commonly used systems and resources

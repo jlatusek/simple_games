@@ -1,6 +1,8 @@
 use crate::components::{BoardBlock, MovingBlock, Position, TetroidBlock};
+use crate::messages::movement::{Direction, TetroidMovementMsg};
 use crate::resources::{Board, Configuration, GameSprites};
 use bevy::prelude::*;
+use log::warn;
 
 #[derive(Resource, Deref, DerefMut)]
 pub struct BlockMoveTimer(pub Timer);
@@ -82,6 +84,7 @@ pub fn update_board(
     board: Res<Board>,
     time: Res<Time>,
     mut move_timer: ResMut<BlockMoveTimer>,
+    mut tetroid_movement_message: MessageReader<TetroidMovementMsg>,
 ) {
     move_timer.tick(time.delta());
 
@@ -100,7 +103,16 @@ pub fn update_board(
             continue;
         }
 
-        let Some(next_entity) = board.get(position.x, next_y) else {
+        let mut next_x = position.x;
+        for event in tetroid_movement_message.read() {
+            match event.move_direction {
+                Direction::None => warn!("You create movement event without any direction!!!"),
+                Direction::Left => next_x -= 1,
+                Direction::Right => next_x += 1,
+            }
+        }
+
+        let Some(next_entity) = board.get(next_x, next_y) else {
             warn!("No entity found at position ({}, {})", position.x, next_y);
             continue;
         };
