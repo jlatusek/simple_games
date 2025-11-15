@@ -1,4 +1,4 @@
-use crate::block::BaseBlock;
+use crate::block::{BaseBlock, TetroidBlock};
 use crate::config::Configuration;
 use crate::{board, config};
 use bevy::prelude::*;
@@ -33,7 +33,7 @@ fn setup_tetroid(
 }
 
 fn update_cube(
-    mut block_query: Query<(Entity, &BaseBlock, &mut Transform)>,
+    mut block_query: Query<(Entity, &BaseBlock, &mut Transform), With<TetroidBlock>>,
     time: Res<Time>,
     mut blocks_timer: ResMut<BlocksMoveTimer>,
     config: Res<Configuration>,
