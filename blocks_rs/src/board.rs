@@ -1,9 +1,15 @@
 use bevy::prelude::*;
 
-use crate::block::{BaseBlock, BlockType, BoardBlock, Position, StoppedBlock, TetroidBlock};
+use crate::block::{BoardBlock, MovingBlock, Position, TetroidBlock};
 use crate::config;
+use crate::config::Configuration;
 
 pub struct BoardPlugin;
+
+#[derive(Resource)]
+struct BlocksMoveTimer {
+    timer: Timer,
+}
 
 #[derive(Resource)]
 pub struct Board {
@@ -15,48 +21,8 @@ pub struct Board {
 impl Plugin for BoardPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, setup_board)
-            .add_systems(FixedUpdate, draw);
+            .add_systems(FixedUpdate, update_board);
     }
-}
-
-#[derive(Bundle)]
-pub struct BoardBlockBundle {
-    mesh: Mesh2d,
-    material: MeshMaterial2d<ColorMaterial>,
-    transform: Transform,
-    visibility: Visibility,
-    base_block: BaseBlock,
-}
-
-impl BoardBlockBundle {
-    fn new(
-        position: &Vec2,
-        sprites: &Res<config::GameSprites>,
-        btype: &BlockType,
-        base_block: BaseBlock,
-    ) -> Self {
-        let (mesh, material, visibility) = match btype {
-            BlockType::Tetroid => (
-                sprites.play_cube.shape.clone(),
-                sprites.play_cube.material.clone(),
-                Visibility::Hidden,
-            ),
-            BlockType::Board => (
-                sprites.env_cube.shape.clone(),
-                sprites.env_cube.material.clone(),
-                Visibility::Visible,
-            ),
-        };
-        Self {
-            mesh,
-            material,
-            visibility,
-            transform: Transform::from_xyz(position.x, position.y, 0.0),
-            base_block,
-        }
-    }
-
-    fn add_entry(self: &Self) {}
 }
 
 fn setup_board(
@@ -64,6 +30,9 @@ fn setup_board(
     config: Res<config::Configuration>,
     sprites: Res<config::GameSprites>,
 ) {
+    commands.insert_resource(BlocksMoveTimer {
+        timer: Timer::from_seconds(config.block.move_delay, TimerMode::Repeating),
+    });
     let x_max = (config.window.width / config.block.center_space).floor() as usize;
     let y_max = (config.window.height / config.block.center_space).floor() as usize;
 
@@ -71,23 +40,32 @@ fn setup_board(
 
     for x in 0..x_max {
         for y in 0..y_max {
-            let base_block = BaseBlock {
-                position: Position::new(x, y),
-                entity: None,
-            };
-            let glob_cord = base_block.board_cord_to_global(&config);
-            let btype = if y != y_max - 1 && x != 0 && x != x_max - 1 {
-                BlockType::Tetroid
+            let position = Position::new(x, y);
+            let glob_cord = position.get_global(&config);
+            let id: Entity;
+            if y != y_max - 1 && x != 0 && x != x_max - 1 {
+                id = commands
+                    .spawn((
+                        TetroidBlock {},
+                        Visibility::Hidden,
+                        position,
+                        sprites.tetroid_block.shape.clone(),
+                        sprites.tetroid_block.material.clone(),
+                        Transform::from_xyz(glob_cord.x, glob_cord.y, 0.0),
+                    ))
+                    .id();
             } else {
-                BlockType::Board
+                id = commands
+                    .spawn((
+                        BoardBlock {},
+                        Visibility::Visible,
+                        position,
+                        sprites.board_block.shape.clone(),
+                        sprites.board_block.material.clone(),
+                        Transform::from_xyz(glob_cord.x, glob_cord.y, 0.0),
+                    ))
+                    .id();
             };
-            let bundle = BoardBlockBundle::new(&glob_cord, &sprites, &btype, base_block);
-            // spawn visual bundle and attach the appropriate block component
-            let id = match btype {
-                BlockType::Tetroid => commands.spawn((bundle, TetroidBlock {}, StoppedBlock {})),
-                BlockType::Board => commands.spawn((bundle, BoardBlock {}, StoppedBlock {})),
-            }
-            .id();
             matrix[x][y] = Some(id);
         }
     }
@@ -99,4 +77,33 @@ fn setup_board(
     });
 }
 
-fn draw(mut commands: Commands) {}
+fn update_board(
+    mut commands: Commands,
+    mut moving_block_q: Query<
+        (Entity, &mut Position, &mut Visibility),
+        (With<TetroidBlock>, With<MovingBlock>),
+    >,
+    mut stopped_block_q: Query<
+        (&mut Position, &mut Visibility),
+        (With<TetroidBlock>, Without<MovingBlock>),
+    >,
+    board: Res<Board>,
+    time: Res<Time>,
+    mut blocks_timer: ResMut<BlocksMoveTimer>,
+    config: Res<Configuration>,
+) {
+    blocks_timer.timer.tick(time.delta());
+
+    if blocks_timer.timer.is_finished() {
+        for (entity, position, mut visibility) in moving_block_q.iter_mut() {
+            let new = board.matrix[position.x][position.y + 1].unwrap();
+            if let Ok((_, mut new_visibility)) = stopped_block_q.get_mut(new) {
+                *visibility = Visibility::Hidden;
+                commands.entity(entity).remove::<MovingBlock>();
+
+                *new_visibility = Visibility::Visible;
+                commands.entity(new).insert(MovingBlock {});
+            }
+        }
+    }
+}

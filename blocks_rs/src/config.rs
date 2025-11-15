@@ -69,8 +69,8 @@ pub struct Sprite {
 
 #[derive(Resource)]
 pub struct GameSprites {
-    pub env_cube: Sprite,
-    pub play_cube: Sprite,
+    pub board_block: Sprite,
+    pub tetroid_block: Sprite,
 }
 
 impl Plugin for ConfigPlugin {
@@ -93,7 +93,7 @@ fn setup(
 
     let cube_shape = Mesh2d(meshes.add(Rectangle::new(config.block.size, config.block.size)));
     let game_sprites = GameSprites {
-        env_cube: Sprite {
+        board_block: Sprite {
             shape: cube_shape.clone(),
             material: MeshMaterial2d(materials.add(Color::Srgba(Srgba {
                 red: 1.0,
@@ -102,7 +102,7 @@ fn setup(
                 alpha: 1.0,
             }))),
         },
-        play_cube: Sprite {
+        tetroid_block: Sprite {
             shape: cube_shape.clone(),
             material: MeshMaterial2d(materials.add(Color::Srgba(Srgba {
                 red: 0.0,
