@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::block::{BaseBlock, BlockType, BoardBlock, Position, TetroidBlock};
+use crate::block::{BaseBlock, BlockType, BoardBlock, Position, StoppedBlock, TetroidBlock};
 use crate::config;
 
 pub struct BoardPlugin;
@@ -84,8 +84,8 @@ fn setup_board(
             let bundle = BoardBlockBundle::new(&glob_cord, &sprites, &btype, base_block);
             // spawn visual bundle and attach the appropriate block component
             let id = match btype {
-                BlockType::Tetroid => commands.spawn((bundle, TetroidBlock {})),
-                BlockType::Board => commands.spawn((bundle, BoardBlock {})),
+                BlockType::Tetroid => commands.spawn((bundle, TetroidBlock {}, StoppedBlock {})),
+                BlockType::Board => commands.spawn((bundle, BoardBlock {}, StoppedBlock {})),
             }
             .id();
             matrix[x][y] = Some(id);

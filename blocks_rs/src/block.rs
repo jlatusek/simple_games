@@ -75,3 +75,9 @@ impl Block for TetroidBlock {
         BlockType::Tetroid
     }
 }
+
+#[derive(Component)]
+pub struct MovingBlock {}
+
+#[derive(Component)]
+pub struct StoppedBlock {}
