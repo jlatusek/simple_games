@@ -1,20 +1,13 @@
 use bevy::prelude::*;
 
-use crate::block::{BoardBlock, MovingBlock, Position, TetroidBlock};
-use crate::config;
+use crate::components::{BoardBlock, MovingBlock, Position, TetroidBlock};
+use crate::resources::{Board, Configuration, GameSprites};
 
 pub struct BoardPlugin;
 
 #[derive(Resource)]
 struct BlocksMoveTimer {
     timer: Timer,
-}
-
-#[derive(Resource)]
-pub struct Board {
-    pub height: usize,
-    pub width: usize,
-    pub matrix: Vec<Vec<Option<Entity>>>,
 }
 
 impl Plugin for BoardPlugin {
@@ -24,11 +17,7 @@ impl Plugin for BoardPlugin {
     }
 }
 
-fn setup_board(
-    mut commands: Commands,
-    config: Res<config::Configuration>,
-    sprites: Res<config::GameSprites>,
-) {
+fn setup_board(mut commands: Commands, config: Res<Configuration>, sprites: Res<GameSprites>) {
     commands.insert_resource(BlocksMoveTimer {
         timer: Timer::from_seconds(config.block.move_delay, TimerMode::Repeating),
     });
@@ -69,11 +58,7 @@ fn setup_board(
         }
     }
 
-    commands.insert_resource(Board {
-        height: y_max,
-        width: x_max,
-        matrix,
-    });
+    commands.insert_resource(Board::new(x_max, y_max, matrix));
 }
 
 fn update_board(
@@ -93,7 +78,7 @@ fn update_board(
         return;
     }
     for (entity, position, mut visibility) in moving_block_q.iter_mut() {
-        let new = board.matrix[position.x][position.y + 1].unwrap();
+        let new = board.get(position.x, position.y + 1).unwrap();
         if let Ok(mut next_visibility) = stopped_block_q.get_mut(new) {
             *visibility = Visibility::Hidden;
             commands.entity(entity).remove::<MovingBlock>();

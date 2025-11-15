@@ -1,10 +1,13 @@
 use bevy::{prelude::*, window::WindowResolution};
 
-mod block;
 mod board;
 mod camera;
+mod components;
 mod config;
+mod constants;
 mod game;
+mod resources;
+mod systems;
 mod tetroid;
 
 fn main() {

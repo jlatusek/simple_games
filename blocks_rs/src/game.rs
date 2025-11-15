@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+use crate::constants::BACKGROUND_COLOR;
 use crate::{board, camera, config, tetroid};
 
 pub struct GamePlugin;
@@ -12,6 +13,6 @@ impl Plugin for GamePlugin {
             tetroid::TetroidPlugin,
             camera::CameraPlugin,
         ))
-        .insert_resource(ClearColor(Color::srgb(0.9, 0.9, 0.9)));
+        .insert_resource(ClearColor(BACKGROUND_COLOR));
     }
 }

@@ -1,7 +1,7 @@
-use crate::config::Configuration;
+use crate::resources::Configuration;
 use bevy::prelude::*;
 
-#[derive(Component)]
+#[derive(Component, Debug)]
 pub struct Position {
     pub x: usize,
     pub y: usize,
@@ -11,9 +11,10 @@ impl Position {
     pub fn new(x: usize, y: usize) -> Self {
         Self { x, y }
     }
+
     pub const ZERO: Self = Self { x: 0, y: 0 };
 
-    pub fn get_vec(&self, config: &Res<Configuration>) -> [usize; 2] {
+    pub fn get_vec(&self, _config: &Res<Configuration>) -> [usize; 2] {
         [self.x, self.y]
     }
 
@@ -33,12 +34,3 @@ impl Default for Position {
         Self::ZERO
     }
 }
-
-#[derive(Component)]
-pub struct BoardBlock {}
-
-#[derive(Component, Default)]
-pub struct TetroidBlock {}
-
-#[derive(Component)]
-pub struct MovingBlock {}
