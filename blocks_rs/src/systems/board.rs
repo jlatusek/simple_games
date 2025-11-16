@@ -6,6 +6,11 @@ use bevy::prelude::*;
 #[derive(Resource, Deref, DerefMut)]
 pub struct BlockMoveTimer(pub Timer);
 
+#[derive(Resource, Default)]
+pub struct MovementEvent {
+    direction: Direction,
+}
+
 pub fn setup_board(mut commands: Commands, config: Res<Configuration>, sprites: Res<GameSprites>) {
     commands.insert_resource(BlockMoveTimer(Timer::from_seconds(
         config.block.move_delay,
@@ -35,6 +40,7 @@ pub fn setup_board(mut commands: Commands, config: Res<Configuration>, sprites: 
     }
 
     commands.insert_resource(Board::new(width, height, matrix));
+    commands.insert_resource(MovementEvent::default());
 }
 
 fn spawn_board_block(
@@ -84,11 +90,20 @@ pub fn update_board(
     time: Res<Time>,
     mut move_timer: ResMut<BlockMoveTimer>,
     mut tetroid_movement_message: MessageReader<TetroidMovementMsg>,
+    mut movement_event: ResMut<MovementEvent>,
 ) {
     move_timer.tick(time.delta());
 
     if !move_timer.is_finished() {
         return;
+    }
+
+    for event in tetroid_movement_message.read() {
+        if event.move_direction.ne(&Direction::None)
+            && movement_event.direction.eq(&Direction::None)
+        {
+            movement_event.direction = event.move_direction.clone();
+        }
     }
 
     for (entity, position, mut visibility) in moving_block_q.iter_mut() {
@@ -103,13 +118,12 @@ pub fn update_board(
         }
 
         let mut next_x = position.x;
-        for event in tetroid_movement_message.read() {
-            match event.move_direction {
-                Direction::None => warn!("You create movement event without any direction!!!"),
-                Direction::Left => next_x -= 1,
-                Direction::Right => next_x += 1,
-            }
+        match movement_event.direction {
+            Direction::None => {}
+            Direction::Left => next_x -= 1,
+            Direction::Right => next_x += 1,
         }
+        movement_event.direction = Direction::None;
 
         let Some(next_entity) = board.get(next_x, next_y) else {
             warn!("No entity found at position ({}, {})", position.x, next_y);
