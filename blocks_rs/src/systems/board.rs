@@ -2,7 +2,6 @@ use crate::components::{BoardBlock, MovingBlock, Position, TetroidBlock};
 use crate::messages::movement::{Direction, TetroidMovementMsg};
 use crate::resources::{Board, Configuration, GameSprites};
 use bevy::prelude::*;
-use log::warn;
 
 #[derive(Resource, Deref, DerefMut)]
 pub struct BlockMoveTimer(pub Timer);
