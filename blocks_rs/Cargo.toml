@@ -4,13 +4,13 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-bevy = "0.17.2"
+bevy = "0.17.3"
 
-bevy_asset = { version = "0.17.2", features = [
+bevy_asset = { version = "0.17.3", features = [
     "asset_processor",
     "file_watcher",
 ] }
-bevy_internal = "0.17.2"
+bevy_internal = "0.17.3"
 
 
 [profile.dev]
