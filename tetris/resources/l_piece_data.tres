@@ -1,4 +1,4 @@
-[gd_resource type="Resource" load_steps=3 format=3 uid="uid://c2avlqcpo6vtt"]
+[gd_resource type="Resource" script_class="PieceData" load_steps=3 format=3 uid="uid://c2avlqcpo6vtt"]
 
 [ext_resource type="Texture2D" uid="uid://dni2bq7ysxrq0" path="res://assets/Orange.png" id="1_hbg0y"]
 [ext_resource type="Script" uid="uid://bmmxxt88aqq10" path="res://scripts/piece_data.gd" id="2_k4uhu"]
@@ -6,5 +6,5 @@
 [resource]
 script = ExtResource("2_k4uhu")
 piece_texture = ExtResource("1_hbg0y")
-tetrominot_type = 4
+tetromino_type = 2
 spawn_position = Vector2(-24, -456)
