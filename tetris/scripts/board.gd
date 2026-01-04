@@ -8,9 +8,7 @@ class_name Board
 func spawn_tetromino(type: Shared.Tetromino, is_next_piece, spawn_position):
 	var tetromino_data: PieceData = Shared.data[type]
 
-	var tetromino = tetromino_scene.instantiate() as Tetromino
-	tetromino.tetromino_data = tetromino_data
-	tetromino.is_next_piece = is_next_piece
+	var tetromino = tetromino_scene.instantiate().init(tetromino_data, is_next_piece)
 
 	if is_next_piece == false:
 		tetromino.position = tetromino_data.spawn_position

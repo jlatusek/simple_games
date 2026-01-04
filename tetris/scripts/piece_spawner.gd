@@ -1,7 +1,6 @@
 extends Node
 
 @onready var current_tetromino: Shared.Tetromino = Shared.Tetromino.values().pick_random()
-
 @onready var board = $"../Board" as Board
 
 
