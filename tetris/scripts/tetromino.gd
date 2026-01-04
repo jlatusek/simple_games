@@ -2,6 +2,18 @@ extends Node2D
 
 class_name Tetromino
 
+
+class Bounds:
+	var x: Vector2
+	var y: Vector2
+
+	func _init(x: Vector2, y: Vector2) -> void:
+		self.x = x
+		self.y = y
+
+
+@onready var bounds = Bounds.new(Vector2(-216, 216), Vector2(0, 457))
+
 var tetromino_data: PieceData
 var is_next_piece
 var pieces: Array[Piece] = []
@@ -57,8 +69,22 @@ func move(direction: Vector2) -> bool:
 	return false
 
 
-func calculate_global_position(direction: Vector2, starting_global_position: Vector2) -> Vector2:
+func calculate_global_position(direction: Vector2, starting_global_position: Vector2) -> Variant:
+	if not is_within_game_bounds(direction, starting_global_position):
+		return null
 	return starting_global_position + direction * pieces[0].get_size()
+
+
+func is_within_game_bounds(direction: Vector2, starting_global_position: Vector2):
+	for piece in pieces:
+		var new_position = piece.position + starting_global_position + direction * piece.get_size()
+		if (
+			new_position.x < bounds.x[0]
+			|| new_position.x > bounds.x[1]
+			|| new_position.y >= bounds.y[1]
+		):
+			return false
+	return true
 
 
 func _on_timer_timeout() -> void:
