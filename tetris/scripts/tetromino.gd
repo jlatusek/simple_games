@@ -15,6 +15,7 @@ class Bounds:
 
 @onready var bounds = Bounds.new(Vector2(-216, 216), Vector2(0, 457))
 
+var rotation_index = 0
 var tetromino_data: PieceData
 var other_tetrominos: Array[Tetromino] = []
 var is_next_piece
@@ -59,9 +60,9 @@ func _input(_event: InputEvent) -> void:
 	elif Input.is_action_just_pressed("hard_drop"):
 		hard_drop()
 	elif Input.is_action_just_pressed("rotate_left"):
-		pass
+		rotate_tetromino(-1)
 	elif Input.is_action_just_pressed("rotate_right"):
-		pass
+		rotate_tetromino(1)
 
 
 func is_collidind_with_other_tetrominos(direction: Vector2, starting_global_position: Vector2):
@@ -75,6 +76,35 @@ func is_collidind_with_other_tetrominos(direction: Vector2, starting_global_posi
 				):
 					return true
 	return false
+
+
+func rotate_tetromino(direction: int) -> void:
+	var original_rotation_index = rotation_index
+	if tetromino_data.tetromino_type == Shared.Tetromino.O:
+		return
+	apply_rotation(direction)
+
+	rotation_index = wrap(rotation_index + direction, 0, 4)
+
+
+func apply_rotation(direction: int):
+	var rotation_matrix = (
+		Shared.clockwise_rotation_matrix
+		if direction == 1
+		else Shared.counter_clockwise_rotation_matrix
+	)
+	var tetromino_cells = Shared.cells[tetromino_data.tetromino_type]
+
+	for i in tetromino_cells.size():
+		var cell = tetromino_cells[i]
+		var x
+		var y
+		var cordinates = rotation_matrix[0] * cell.x + rotation_matrix[1] * cell.y
+		tetromino_cells[i] = cordinates
+
+	for i in pieces.size():
+		var piece = pieces[i]
+		piece.position = tetromino_cells[i] * piece.get_size()
 
 
 func hard_drop():
