@@ -16,6 +16,7 @@ class Bounds:
 @onready var bounds = Bounds.new(Vector2(-216, 216), Vector2(0, 457))
 
 var tetromino_data: PieceData
+var other_tetrominos: Array[Tetromino] = []
 var is_next_piece
 var pieces: Array[Piece] = []
 var wall_kicks
@@ -63,6 +64,19 @@ func _input(_event: InputEvent) -> void:
 		pass
 
 
+func is_collidind_with_other_tetrominos(direction: Vector2, starting_global_position: Vector2):
+	for tetromino in other_tetrominos:
+		var tetromino_pieces = tetromino.pieces
+		for tetromino_piece in tetromino_pieces:
+			for piece in pieces:
+				if (
+					starting_global_position + piece.position + direction * piece.get_size().x
+					== tetromino.global_position + tetromino_piece.position
+				):
+					return true
+	return false
+
+
 func hard_drop():
 	while move(Vector2.DOWN):
 		continue
@@ -84,6 +98,8 @@ func move(direction: Vector2) -> bool:
 
 
 func calculate_global_position(direction: Vector2, starting_global_position: Vector2) -> Variant:
+	if is_collidind_with_other_tetrominos(direction, starting_global_position):
+		return null
 	if not is_within_game_bounds(direction, starting_global_position):
 		return null
 	return starting_global_position + direction * pieces[0].get_size()
