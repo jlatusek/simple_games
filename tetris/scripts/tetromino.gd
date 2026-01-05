@@ -54,11 +54,15 @@ func _input(_event: InputEvent) -> void:
 	elif Input.is_action_just_pressed("down"):
 		move(Vector2.DOWN)
 	elif Input.is_action_just_pressed("hard_drop"):
-		pass
+		hard_drop()
 	elif Input.is_action_just_pressed("rotate_left"):
 		pass
 	elif Input.is_action_just_pressed("rotate_right"):
 		pass
+		
+func hard_drop():
+	while(move(Vector2.DOWN)):
+		continue
 
 
 func move(direction: Vector2) -> bool:
