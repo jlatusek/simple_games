@@ -1,6 +1,7 @@
 extends Node2D
 
 class_name Tetromino
+signal lock_tetromino(tetromino: Tetromino)
 
 
 class Bounds:
@@ -21,6 +22,7 @@ var wall_kicks
 
 @onready var tetromino_cells = Shared.cells[tetromino_data.tetromino_type]
 @onready var piece_scene = preload("res://scenes/piece.tscn")
+@onready var timer: Timer = $Timer
 
 
 func _ready() -> void:
@@ -59,10 +61,18 @@ func _input(_event: InputEvent) -> void:
 		pass
 	elif Input.is_action_just_pressed("rotate_right"):
 		pass
-		
+
+
 func hard_drop():
-	while(move(Vector2.DOWN)):
+	while move(Vector2.DOWN):
 		continue
+	lock()
+
+
+func lock():
+	timer.stop()
+	lock_tetromino.emit(self)
+	set_process_input(false)
 
 
 func move(direction: Vector2) -> bool:
@@ -92,4 +102,6 @@ func is_within_game_bounds(direction: Vector2, starting_global_position: Vector2
 
 
 func _on_timer_timeout() -> void:
-	move(Vector2.DOWN)
+	var should_lock = not move(Vector2.DOWN)
+	if should_lock:
+		lock()
