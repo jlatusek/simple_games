@@ -67,7 +67,7 @@ func _input(_event: InputEvent) -> void:
 
 func is_collidind_with_other_tetrominos(direction: Vector2, starting_global_position: Vector2):
 	for tetromino in other_tetrominos:
-		var tetromino_pieces = tetromino.pieces
+		var tetromino_pieces = tetromino.get_children().filter(func (x): return x is Piece)
 		for tetromino_piece in tetromino_pieces:
 			for piece in pieces:
 				if (
