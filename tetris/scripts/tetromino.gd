@@ -92,6 +92,10 @@ func _input(_event: InputEvent) -> void:
 		rotate_tetromino(-1)
 	elif Input.is_action_just_pressed("rotate_right"):
 		rotate_tetromino(1)
+	elif Input.is_action_just_pressed("restart"):
+		var _reload = get_tree().reload_current_scene()
+	elif Input.is_action_just_pressed("exit"):
+		get_tree().quit()
 
 
 func is_collidind_with_other_tetrominos(direction: Vector2, starting_global_position: Vector2):
