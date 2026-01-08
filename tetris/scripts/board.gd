@@ -40,7 +40,7 @@ func fill_board_pieces():
 		board_pieces.append([])
 
 	for tetromino in tetrominos:
-		var tetromino_pieces = tetromino.get_children().filter(func (c): return c is Piece)
+		var tetromino_pieces = tetromino.get_children().filter(func(c): return c is Piece)
 
 		for piece in tetromino_pieces:
 			var row = (
@@ -59,7 +59,7 @@ func clear_board_pieces(board_pieces) -> void:
 			clear_row(row_to_analyze)
 			board_pieces[i - 1].clear()
 			move_all_row_pieces_down(board_pieces, i)
-		i-=1
+		i -= 1
 
 
 func clear_row(row):

@@ -21,10 +21,12 @@ var other_tetrominos: Array[Tetromino] = []
 var is_next_piece
 var pieces: Array[Piece] = []
 var wall_kicks
+var ghost_tetromino: GhostTetromino
 
 @onready var tetromino_cells = Shared.cells[tetromino_data.tetromino_type]
 @onready var piece_scene = preload("res://scenes/piece.tscn")
 @onready var timer: Timer = $Timer
+@onready var ghost_tetromino_scene = preload("res://scenes/ghost_tetromino.tscn")
 
 
 func _ready() -> void:
@@ -42,6 +44,33 @@ func _ready() -> void:
 			if tetromino_data.tetromino_type == Shared.Tetromino.I
 			else Shared.wall_kicks_jlostz
 		)
+		ghost_tetromino = ghost_tetromino_scene.instantiate() as GhostTetromino
+		ghost_tetromino.tetromino_data = tetromino_data
+		get_tree().root.add_child.call_deferred(ghost_tetromino)
+		hard_drop_ghost()
+
+
+func hard_drop_ghost():
+	var final_hard_drop_position
+	var ghost_position_update = calculate_global_position(Vector2.DOWN, global_position)
+
+	while ghost_position_update != null:
+		ghost_position_update = calculate_global_position(Vector2.DOWN, ghost_position_update)
+		if ghost_position_update != null:
+			final_hard_drop_position = ghost_position_update
+
+	if final_hard_drop_position != null:
+		var children = get_children().filter(func(c): return c is Piece)
+
+		var pieces_position = []
+
+		for i in children.size():
+			var piece_position = children[i].position
+			pieces_position.append(piece_position)
+
+		ghost_tetromino.set_ghost_tetromino(final_hard_drop_position, pieces_position)
+
+	return final_hard_drop_position
 
 
 func init(tetromino_data: PieceData, is_next_piece: bool) -> Tetromino:
@@ -67,7 +96,7 @@ func _input(_event: InputEvent) -> void:
 
 func is_collidind_with_other_tetrominos(direction: Vector2, starting_global_position: Vector2):
 	for tetromino in other_tetrominos:
-		var tetromino_pieces = tetromino.get_children().filter(func (x): return x is Piece)
+		var tetromino_pieces = tetromino.get_children().filter(func(x): return x is Piece)
 		for tetromino_piece in tetromino_pieces:
 			for piece in pieces:
 				if (
@@ -89,6 +118,8 @@ func rotate_tetromino(direction: int) -> void:
 	if not test_wall_kicks(rotation_index, direction):
 		rotation_index = original_rotation_index
 		apply_rotation(-direction)
+
+	hard_drop_ghost.call_deferred()
 
 
 func test_wall_kicks(rotation_index: int, rotation_direction: int):
@@ -137,12 +168,15 @@ func lock():
 	timer.stop()
 	lock_tetromino.emit(self)
 	set_process_input(false)
+	ghost_tetromino.queue_free()
 
 
 func move(direction: Vector2) -> bool:
 	var new_position = calculate_global_position(direction, global_position)
 	if new_position:
 		global_position = new_position
+		if direction != Vector2.DOWN:
+			hard_drop_ghost.call_deferred()
 		return true
 	return false
 

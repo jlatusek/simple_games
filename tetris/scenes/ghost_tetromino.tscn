@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dj5m4127fwwoe"]
+
+[ext_resource type="Script" uid="uid://cmacje2gb4dsx" path="res://scripts/ghost_tetromino.gd" id="1_qfifv"]
+
+[node name="GhostTetromino" type="Node2D"]
+script = ExtResource("1_qfifv")
