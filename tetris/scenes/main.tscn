@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://dud4dyfasaqgw"]
+[gd_scene load_steps=8 format=3 uid="uid://dud4dyfasaqgw"]
 
 [ext_resource type="Texture2D" uid="uid://ci7gar7a8gtwl" path="res://assets/Border.png" id="1_0wfyh"]
 [ext_resource type="Texture2D" uid="uid://j8fpmgqedjv2" path="res://assets/Grid.png" id="2_sugp2"]
 [ext_resource type="Script" uid="uid://cau8wm6g34x66" path="res://scripts/piece_spawner.gd" id="3_sugp2"]
 [ext_resource type="Script" uid="uid://ddl1qwfwr7m41" path="res://scripts/board.gd" id="4_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://dbw4eoirce3ii" path="res://scenes/tetromino.tscn" id="5_tbgi4"]
+[ext_resource type="PackedScene" uid="uid://b2y856qjueva5" path="res://scenes/ui.tscn" id="6_tefeu"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_tbgi4"]
 font_size = 32
@@ -63,3 +64,5 @@ vertical_alignment = 1
 
 [node name="PieceSpawner" type="Node" parent="."]
 script = ExtResource("3_sugp2")
+
+[node name="UI" parent="." instance=ExtResource("6_tefeu")]

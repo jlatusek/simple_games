@@ -9,6 +9,7 @@ const COLUMN_COUNT = 10
 var next_tetromino
 var tetrominos: Array[Tetromino] = []
 signal tetromino_locked
+signal game_over
 @onready var panel_container: PanelContainer = $"../PanelContainer"
 @onready var v_box_container: VBoxContainer = $"../PanelContainer/VBoxContainer"
 
@@ -34,6 +35,15 @@ func on_tetromino_locked(tetromino: Tetromino):
 	tetrominos.append(tetromino)
 	tetromino_locked.emit()
 	clear_lines()
+	check_game_over()
+	
+func check_game_over():
+	for tetromino in tetrominos:
+		var pieces = tetromino.get_children().filter(func (c): return c is Piece)
+		for piece in pieces:
+			var y_loc = piece.global_position.y
+			if y_loc == -456:
+				game_over.emit()
 
 
 func clear_lines() -> void:
