@@ -47,7 +47,10 @@ func _ready() -> void:
 		ghost_tetromino = ghost_tetromino_scene.instantiate() as GhostTetromino
 		ghost_tetromino.tetromino_data = tetromino_data
 		get_tree().root.add_child.call_deferred(ghost_tetromino)
-		hard_drop_ghost()
+		hard_drop_ghost.call_deferred()
+	else: 
+		timer.stop()
+		set_process_input(false)
 
 
 func hard_drop_ghost():

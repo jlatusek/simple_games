@@ -6,13 +6,15 @@ const ROW_COUNT = 20
 const COLUMN_COUNT = 10
 
 @export var tetromino_scene: PackedScene
+var next_tetromino
 var tetrominos: Array[Tetromino] = []
 signal tetromino_locked
+@onready var panel_container: PanelContainer = $"../PanelContainer"
+@onready var v_box_container: VBoxContainer = $"../PanelContainer/VBoxContainer"
 
 
 func spawn_tetromino(type: Shared.Tetromino, is_next_piece, spawn_position):
 	var tetromino_data: PieceData = Shared.data[type]
-
 	var tetromino = tetromino_scene.instantiate().init(tetromino_data, is_next_piece) as Tetromino
 
 	if is_next_piece == false:
@@ -20,9 +22,15 @@ func spawn_tetromino(type: Shared.Tetromino, is_next_piece, spawn_position):
 		tetromino.other_tetrominos = tetrominos
 		tetromino.lock_tetromino.connect(on_tetromino_locked)
 		add_child(tetromino)
+	else:
+		tetromino.scale = Vector2(0.5, 0.5)
+		tetromino.set_position(spawn_position)
+		v_box_container.add_child(tetromino)
+		next_tetromino = tetromino
 
 
 func on_tetromino_locked(tetromino: Tetromino):
+	next_tetromino.queue_free()
 	tetrominos.append(tetromino)
 	tetromino_locked.emit()
 	clear_lines()
