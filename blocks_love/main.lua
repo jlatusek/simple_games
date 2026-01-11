@@ -8,7 +8,13 @@ function love.draw()
 			love.graphics.setColor(0.87, 0.87, 0.87)
 			local blockSize = 20
 			local blockDrawSize = blockSize - 1
-			love.graphics.rectangle("fill", (x - 1) * blockSize, (y - 1) * blockSize, blockDrawSize, blockDrawSize)
+			love.graphics.rectangle(
+				"fill",
+				(x - 1) * blockSize,
+				(y - 1) * blockSize,
+				blockDrawSize,
+				blockDrawSize
+			)
 		end
 	end
 end
