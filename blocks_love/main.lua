@@ -3,6 +3,7 @@ local gridYCount = 18
 
 local tetrominos = require("tetromino")
 
+local pieceStructures = tetrominos.pieceStructures
 local inert = {}
 local pieceType = 1
 local pieceRotation = 1
@@ -32,6 +33,34 @@ local function drawBlock(block, x, y)
 	)
 end
 
+function love.keypressed(key)
+	if key == "x" then
+		pieceRotation = pieceRotation + 1
+		if pieceRotation > #pieceStructures[pieceType] then
+			pieceRotation = 1
+		end
+	elseif key == "z" then
+		pieceRotation = pieceRotation - 1
+		if pieceRotation < 1 then
+			pieceRotation = #pieceStructures[pieceType]
+		end
+	elseif key == "down" then
+		pieceType = pieceType + 1
+		if pieceType > #pieceStructures then
+			pieceType = 1
+		end
+		pieceRotation = 1
+	elseif key == "up" then
+		pieceType = pieceType - 1
+		if pieceType < 1 then
+			pieceType = #pieceStructures
+		end
+		pieceRotation = 1
+	elseif key == "q" or key == "escape" then
+		love.event.quit()
+	end
+end
+
 function love.load()
 	love.graphics.setBackgroundColor(255, 255, 255)
 
@@ -53,7 +82,6 @@ function love.draw()
 
 	for y = 1, 4 do
 		for x = 1, 4 do
-			local pieceStructures = tetrominos.pieceStructures
 			local block = pieceStructures[pieceType][pieceRotation][y][x]
 			if block ~= " " then
 				drawBlock(block, x, y)
