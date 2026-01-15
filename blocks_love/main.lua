@@ -10,8 +10,12 @@ local pieceRotation = 1
 local pieceX = 3
 local pieceY = 0
 local timer = 0
+local timerLimit = 0.3
 local pieceXCount = 4
 local pieceYCount = 4
+local sequence = {}
+local offsetX = 2
+local offsetY = 5
 
 local function drawBlock(block, x, y)
 	local colors = {
@@ -59,6 +63,24 @@ local function canPieceMove(testX, testY, testRotation)
 	return true
 end
 
+local function newSequence()
+	sequence = {}
+	for pieceTypeIndex = 1, #pieceStructures do
+		local position = love.math.random(#sequence + 1)
+		table.insert(sequence, position, pieceTypeIndex)
+	end
+end
+
+local function newPiece()
+	pieceX = 3
+	pieceY = 0
+	pieceType = love.math.random(1, #pieceStructures)
+	pieceRotation = love.math.random(1, #pieceStructures[pieceType] - 1)
+	if #sequence == 0 then
+		newSequence()
+	end
+end
+
 function love.keypressed(key)
 	if key == "x" then
 		local testRotation = pieceRotation + 1
@@ -76,6 +98,10 @@ function love.keypressed(key)
 		if canPieceMove(pieceX, pieceY, testRotation) then
 			pieceRotation = testRotation
 		end
+	elseif key == "c" or key == "down" then
+		while canPieceMove(pieceX, pieceY + 1, pieceRotation) do
+			pieceY = pieceY + 1
+		end
 	elseif key == "left" then
 		local testX = pieceX - 1
 		if canPieceMove(testX, pieceY, pieceRotation) then
@@ -86,18 +112,6 @@ function love.keypressed(key)
 		if canPieceMove(testX, pieceY, pieceRotation) then
 			pieceX = testX
 		end
-	elseif key == "down" then
-		pieceType = pieceType + 1
-		if pieceType > #pieceStructures then
-			pieceType = 1
-		end
-		pieceRotation = 1
-	elseif key == "up" then
-		pieceType = pieceType - 1
-		if pieceType < 1 then
-			pieceType = #pieceStructures
-		end
-		pieceRotation = 1
 	elseif key == "q" or key == "escape" then
 		love.event.quit()
 	elseif key == "r" then
@@ -107,6 +121,10 @@ end
 
 function love.load()
 	love.graphics.setBackgroundColor(255, 255, 255)
+	love.math.setRandomSeed(os.time())
+
+	newSequence()
+	newPiece()
 
 	inert = {}
 	for y = 1, gridYCount do
@@ -119,11 +137,49 @@ end
 
 function love.update(dt)
 	timer = timer + dt
-	if timer >= 0.5 then
+	if timer >= timerLimit then
 		timer = 0
 		local testY = pieceY + 1
 		if canPieceMove(pieceX, testY, pieceRotation) then
 			pieceY = testY
+		else
+			for y = 1, pieceYCount do
+				for x = 1, pieceXCount do
+					local block =
+						pieceStructures[pieceType][pieceRotation][y][x]
+					if block ~= " " then
+						inert[pieceY + y][pieceX + x] = block
+					end
+				end
+			end
+			for y = 1, gridYCount do
+				local complete = true
+				for x = 1, gridXCount do
+					if inert[y][x] == " " then
+						complete = false
+						break
+					end
+				end
+
+				if complete then
+					print("Complete row: " .. y)
+					for removeY = y, 2, -1 do
+						for removeX = 1, gridXCount do
+							inert[removeY][removeX] =
+								inert[removeY - 1][removeX]
+						end
+					end
+
+					for removeX = 1, gridXCount do
+						inert[1][removeX] = " "
+					end
+				end
+			end
+			newPiece()
+			if not canPieceMove(pieceX, pieceY, pieceRotation) then
+				love.load()
+			end
+			timer = timerLimit
 		end
 	end
 end
