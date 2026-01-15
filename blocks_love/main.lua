@@ -6,6 +6,7 @@ local tetrominos = require("tetromino")
 local pieceStructures = tetrominos.pieceStructures
 local inert = {}
 local pieceType = 1
+local nextPieceType = 2
 local pieceRotation = 1
 local pieceX = 3
 local pieceY = 0
@@ -27,6 +28,7 @@ local function drawBlock(block, x, y)
 		s = { 0.83, 0.54, 0.93 },
 		t = { 0.97, 0.58, 0.77 },
 		z = { 0.66, 0.83, 0.46 },
+		preview = { 0.75, 0.75, 0.75 },
 	}
 	local color = colors[block]
 	love.graphics.setColor(color)
@@ -74,11 +76,9 @@ end
 local function newPiece()
 	pieceX = 3
 	pieceY = 0
-	pieceType = love.math.random(1, #pieceStructures)
+    pieceType = nextPieceType
+	nextPieceType = love.math.random(1, #pieceStructures)
 	pieceRotation = love.math.random(1, #pieceStructures[pieceType] - 1)
-	if #sequence == 0 then
-		newSequence()
-	end
 end
 
 function love.keypressed(key)
@@ -187,7 +187,7 @@ end
 function love.draw()
 	for y = 1, gridYCount do
 		for x = 1, gridXCount do
-			drawBlock(inert[y][x], x, y)
+			drawBlock(inert[y][x], x + offsetX, y + offsetY)
 		end
 	end
 
@@ -195,7 +195,16 @@ function love.draw()
 		for x = 1, pieceXCount do
 			local block = pieceStructures[pieceType][pieceRotation][y][x]
 			if block ~= " " then
-				drawBlock(block, x + pieceX, y + pieceY)
+				drawBlock(block, x + pieceX + offsetX, y + pieceY + offsetY)
+			end
+		end
+	end
+
+	for y = 1, pieceYCount do
+		for x = 1, pieceXCount do
+			local block = pieceStructures[nextPieceType][1][y][x]
+			if block ~= " " then
+				drawBlock("preview", x + 5, y + 1)
 			end
 		end
 	end
