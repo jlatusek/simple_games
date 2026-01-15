@@ -7,6 +7,11 @@ local pieceStructures = tetrominos.pieceStructures
 local inert = {}
 local pieceType = 1
 local pieceRotation = 1
+local pieceX = 3
+local pieceY = 0
+local timer = 0
+local pieceXCount = 4
+local pieceYCount = 4
 
 local function drawBlock(block, x, y)
 	local colors = {
@@ -33,16 +38,53 @@ local function drawBlock(block, x, y)
 	)
 end
 
+local function canPieceMove(testX, testY, testRotation)
+	for y = 1, pieceYCount do
+		for x = 1, pieceXCount do
+			local testBlockX = testX + x
+			local testBlockY = testY + y
+			if
+				pieceStructures[pieceType][testRotation][y][x] ~= " "
+				and (
+					testBlockX < 1
+					or testBlockX > gridXCount
+					or testBlockY > gridYCount
+					or inert[testBlockY][testBlockX] ~= " "
+				)
+			then
+				return false
+			end
+		end
+	end
+	return true
+end
+
 function love.keypressed(key)
 	if key == "x" then
-		pieceRotation = pieceRotation + 1
-		if pieceRotation > #pieceStructures[pieceType] then
-			pieceRotation = 1
+		local testRotation = pieceRotation + 1
+		if testRotation > #pieceStructures[pieceType] then
+			testRotation = 1
+		end
+		if canPieceMove(pieceX, pieceY, testRotation) then
+			pieceRotation = testRotation
 		end
 	elseif key == "z" then
-		pieceRotation = pieceRotation - 1
-		if pieceRotation < 1 then
-			pieceRotation = #pieceStructures[pieceType]
+		local testRotation = pieceRotation - 1
+		if testRotation < 1 then
+			testRotation = #pieceStructures[pieceType]
+		end
+		if canPieceMove(pieceX, pieceY, testRotation) then
+			pieceRotation = testRotation
+		end
+	elseif key == "left" then
+		local testX = pieceX - 1
+		if canPieceMove(testX, pieceY, pieceRotation) then
+			pieceX = testX
+		end
+	elseif key == "right" then
+		local testX = pieceX + 1
+		if canPieceMove(testX, pieceY, pieceRotation) then
+			pieceX = testX
 		end
 	elseif key == "down" then
 		pieceType = pieceType + 1
@@ -58,6 +100,8 @@ function love.keypressed(key)
 		pieceRotation = 1
 	elseif key == "q" or key == "escape" then
 		love.event.quit()
+	elseif key == "r" then
+		love.event.quit("restart") -- <--- This reboots the game
 	end
 end
 
@@ -73,6 +117,17 @@ function love.load()
 	end
 end
 
+function love.update(dt)
+	timer = timer + dt
+	if timer >= 0.5 then
+		timer = 0
+		local testY = pieceY + 1
+		if canPieceMove(pieceX, testY, pieceRotation) then
+			pieceY = testY
+		end
+	end
+end
+
 function love.draw()
 	for y = 1, gridYCount do
 		for x = 1, gridXCount do
@@ -80,11 +135,11 @@ function love.draw()
 		end
 	end
 
-	for y = 1, 4 do
-		for x = 1, 4 do
+	for y = 1, pieceYCount do
+		for x = 1, pieceXCount do
 			local block = pieceStructures[pieceType][pieceRotation][y][x]
 			if block ~= " " then
-				drawBlock(block, x, y)
+				drawBlock(block, x + pieceX, y + pieceY)
 			end
 		end
 	end
