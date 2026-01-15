@@ -17,8 +17,10 @@ local pieceYCount = 4
 local sequence = {}
 local offsetX = 2
 local offsetY = 5
+local blockSize = 40
+local blockDrawSize = blockSize - 1
 
-local function drawBlock(block, x, y)
+local function drawBlock(block, x, y, transparency)
 	local colors = {
 		[" "] = { 0.87, 0.87, 0.87 },
 		i = { 0.47, 0.76, 0.94 },
@@ -29,12 +31,13 @@ local function drawBlock(block, x, y)
 		t = { 0.97, 0.58, 0.77 },
 		z = { 0.66, 0.83, 0.46 },
 		preview = { 0.75, 0.75, 0.75 },
+		shadow = { 0.35, 0.35, 0.35 },
 	}
 	local color = colors[block]
+	table.insert(color, transparency or 1)
+
 	love.graphics.setColor(color)
 
-	local blockSize = 20
-	local blockDrawSize = blockSize - 1
 	love.graphics.rectangle(
 		"fill",
 		(x - 1) * blockSize,
@@ -76,7 +79,7 @@ end
 local function newPiece()
 	pieceX = 3
 	pieceY = 0
-    pieceType = nextPieceType
+	pieceType = nextPieceType
 	nextPieceType = love.math.random(1, #pieceStructures)
 	pieceRotation = love.math.random(1, #pieceStructures[pieceType] - 1)
 end
@@ -102,6 +105,7 @@ function love.keypressed(key)
 		while canPieceMove(pieceX, pieceY + 1, pieceRotation) do
 			pieceY = pieceY + 1
 		end
+        timer = timerLimit
 	elseif key == "left" then
 		local testX = pieceX - 1
 		if canPieceMove(testX, pieceY, pieceRotation) then
@@ -115,11 +119,21 @@ function love.keypressed(key)
 	elseif key == "q" or key == "escape" then
 		love.event.quit()
 	elseif key == "r" then
-		love.event.quit("restart") -- <--- This reboots the game
+		love.event.quit("restart")
 	end
 end
 
 function love.load()
+	love.window.setMode(
+		(gridXCount + offsetX * 2) * blockSize,
+		(gridYCount + offsetY * 2) * blockSize,
+		{
+			resizable = true,
+			vsync = true,
+			minwidth = 400,
+			minheight = 300,
+		}
+	)
 	love.graphics.setBackgroundColor(255, 255, 255)
 	love.math.setRandomSeed(os.time())
 
@@ -205,6 +219,25 @@ function love.draw()
 			local block = pieceStructures[nextPieceType][1][y][x]
 			if block ~= " " then
 				drawBlock("preview", x + 5, y + 1)
+			end
+		end
+	end
+
+	for y = 1, pieceYCount do
+		for x = 1, pieceXCount do
+			local block = pieceStructures[pieceType][pieceRotation][y][x]
+			local shadow_piece_y = 0
+			while canPieceMove(pieceX, shadow_piece_y, pieceRotation) do
+				shadow_piece_y = shadow_piece_y + 1
+			end
+			shadow_piece_y = shadow_piece_y - 1
+			if block ~= " " then
+				drawBlock(
+					block,
+					x + pieceX + offsetX,
+					y + shadow_piece_y + offsetY,
+                    0.4
+				)
 			end
 		end
 	end
