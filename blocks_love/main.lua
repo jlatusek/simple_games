@@ -9,7 +9,6 @@ local nextTetroType = 2
 local tetroRotation = 1
 local timer = 0
 local timerLimit = 0.3
-local sequence = {}
 local offsetX = 2
 local offsetY = 5
 
@@ -32,14 +31,6 @@ local function canPieceMove(testX, testY, testRotation)
 		end
 	end
 	return true
-end
-
-local function newSequence()
-	sequence = {}
-	for pieceTypeIndex = 1, #pieceStructures do
-		local position = love.math.random(#sequence + 1)
-		table.insert(sequence, position, pieceTypeIndex)
-	end
 end
 
 local function newPiece()
@@ -103,7 +94,6 @@ function love.load()
 	love.graphics.setBackgroundColor(255, 255, 255)
 	love.math.setRandomSeed(os.time())
 
-	newSequence()
 	newPiece()
 
 	inert = {}
