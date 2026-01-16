@@ -2,6 +2,8 @@ local gridXCount = 10
 local gridYCount = 18
 
 local tetrominos = require("tetromino")
+local piece = require("piece")
+local conf = require("config")
 
 local pieceStructures = tetrominos.pieceStructures
 local inert = {}
@@ -17,35 +19,6 @@ local pieceYCount = 4
 local sequence = {}
 local offsetX = 2
 local offsetY = 5
-local blockSize = 40
-local blockDrawSize = blockSize - 1
-
-local function drawBlock(block, x, y, transparency)
-	local colors = {
-		[" "] = { 0.87, 0.87, 0.87 },
-		i = { 0.47, 0.76, 0.94 },
-		j = { 0.93, 0.91, 0.42 },
-		l = { 0.49, 0.85, 0.76 },
-		o = { 0.92, 0.69, 0.47 },
-		s = { 0.83, 0.54, 0.93 },
-		t = { 0.97, 0.58, 0.77 },
-		z = { 0.66, 0.83, 0.46 },
-		preview = { 0.75, 0.75, 0.75 },
-		shadow = { 0.35, 0.35, 0.35 },
-	}
-	local color = colors[block]
-	table.insert(color, transparency or 1)
-
-	love.graphics.setColor(color)
-
-	love.graphics.rectangle(
-		"fill",
-		(x - 1) * blockSize,
-		(y - 1) * blockSize,
-		blockDrawSize,
-		blockDrawSize
-	)
-end
 
 local function canPieceMove(testX, testY, testRotation)
 	for y = 1, pieceYCount do
@@ -105,7 +78,7 @@ function love.keypressed(key)
 		while canPieceMove(pieceX, pieceY + 1, pieceRotation) do
 			pieceY = pieceY + 1
 		end
-        timer = timerLimit
+		timer = timerLimit
 	elseif key == "left" then
 		local testX = pieceX - 1
 		if canPieceMove(testX, pieceY, pieceRotation) then
@@ -125,8 +98,8 @@ end
 
 function love.load()
 	love.window.setMode(
-		(gridXCount + offsetX * 2) * blockSize,
-		(gridYCount + offsetY * 2) * blockSize,
+		(gridXCount + offsetX * 2) * conf.blockSize,
+		(gridYCount + offsetY * 2) * conf.blockSize,
 		{
 			resizable = true,
 			vsync = true,
@@ -201,7 +174,7 @@ end
 function love.draw()
 	for y = 1, gridYCount do
 		for x = 1, gridXCount do
-			drawBlock(inert[y][x], x + offsetX, y + offsetY)
+			piece.draw(inert[y][x], x + offsetX, y + offsetY)
 		end
 	end
 
@@ -209,7 +182,7 @@ function love.draw()
 		for x = 1, pieceXCount do
 			local block = pieceStructures[pieceType][pieceRotation][y][x]
 			if block ~= " " then
-				drawBlock(block, x + pieceX + offsetX, y + pieceY + offsetY)
+				piece.draw(block, x + pieceX + offsetX, y + pieceY + offsetY)
 			end
 		end
 	end
@@ -218,7 +191,7 @@ function love.draw()
 		for x = 1, pieceXCount do
 			local block = pieceStructures[nextPieceType][1][y][x]
 			if block ~= " " then
-				drawBlock(block, x + 5, y + 1, 0.8)
+				piece.draw(block, x + 5, y + 1, 0.8)
 			end
 		end
 	end
@@ -232,11 +205,11 @@ function love.draw()
 			end
 			shadow_piece_y = shadow_piece_y - 1
 			if block ~= " " then
-				drawBlock(
+				piece.draw(
 					block,
 					x + pieceX + offsetX,
 					y + shadow_piece_y + offsetY,
-                    0.4
+					0.4
 				)
 			end
 		end
