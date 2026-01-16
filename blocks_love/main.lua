@@ -1,7 +1,7 @@
 local gridXCount = 10
 local gridYCount = 18
 
-local tetrominos = require("tetromino")
+local tetrominos = require("shapes")
 local piece = require("piece")
 local conf = require("config")
 
