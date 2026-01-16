@@ -1,8 +1,7 @@
-local tetrominos = require("shapes")
+local shapes = require("shapes")
 local piece = require("piece")
 local conf = require("config")
 
-local pieceStructures = tetrominos.pieceStructures
 local inert = {}
 local pieceType = 1
 local nextTetroType = 2
@@ -18,7 +17,7 @@ local function canPieceMove(testX, testY, testRotation)
 			local testBlockX = testX + x
 			local testBlockY = testY + y
 			if
-				pieceStructures[pieceType][testRotation][y][x] ~= " "
+				shapes.pieceStructures[pieceType][testRotation][y][x] ~= " "
 				and (
 					testBlockX < 1
 					or testBlockX > conf.gridXCount
@@ -37,14 +36,14 @@ local function newPiece()
 	pieceX = 3
 	pieceY = 0
 	pieceType = nextTetroType
-	nextTetroType = love.math.random(1, #pieceStructures)
-	tetroRotation = love.math.random(1, #pieceStructures[pieceType] - 1)
+	nextTetroType = love.math.random(1, #shapes.pieceStructures)
+	tetroRotation = love.math.random(1, #shapes.pieceStructures[pieceType] - 1)
 end
 
 function love.keypressed(key)
 	if key == "x" then
 		local testRotation = tetroRotation + 1
-		if testRotation > #pieceStructures[pieceType] then
+		if testRotation > #shapes.pieceStructures[pieceType] then
 			testRotation = 1
 		end
 		if canPieceMove(pieceX, pieceY, testRotation) then
@@ -53,7 +52,7 @@ function love.keypressed(key)
 	elseif key == "z" then
 		local testRotation = tetroRotation - 1
 		if testRotation < 1 then
-			testRotation = #pieceStructures[pieceType]
+			testRotation = #shapes.pieceStructures[pieceType]
 		end
 		if canPieceMove(pieceX, pieceY, testRotation) then
 			tetroRotation = testRotation
@@ -116,7 +115,7 @@ function love.update(dt)
 			for y = 1, conf.pieceYCount do
 				for x = 1, conf.pieceXCount do
 					local block =
-						pieceStructures[pieceType][tetroRotation][y][x]
+						shapes.pieceStructures[pieceType][tetroRotation][y][x]
 					if block ~= " " then
 						inert[pieceY + y][pieceX + x] = block
 					end
@@ -163,7 +162,7 @@ function love.draw()
 
 	for y = 1, conf.pieceYCount do
 		for x = 1, conf.pieceXCount do
-			local block = pieceStructures[pieceType][tetroRotation][y][x]
+			local block = shapes.pieceStructures[pieceType][tetroRotation][y][x]
 			if block ~= " " then
 				piece.draw(block, x + pieceX + offsetX, y + pieceY + offsetY)
 			end
@@ -172,7 +171,7 @@ function love.draw()
 
 	for y = 1, conf.pieceYCount do
 		for x = 1, conf.pieceXCount do
-			local block = pieceStructures[nextTetroType][1][y][x]
+			local block = shapes.pieceStructures[nextTetroType][1][y][x]
 			if block ~= " " then
 				piece.draw(block, x + 5, y + 1, 0.8)
 			end
@@ -181,7 +180,7 @@ function love.draw()
 
 	for y = 1, conf.pieceYCount do
 		for x = 1, conf.pieceXCount do
-			local block = pieceStructures[pieceType][tetroRotation][y][x]
+			local block = shapes.pieceStructures[pieceType][tetroRotation][y][x]
 			local shadow_piece_y = 0
 			while canPieceMove(pieceX, shadow_piece_y, tetroRotation) do
 				shadow_piece_y = shadow_piece_y + 1
