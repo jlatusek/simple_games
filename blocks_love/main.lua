@@ -36,8 +36,8 @@ local function newPiece()
 	pieceX = 3
 	pieceY = 0
 	pieceType = nextTetroType
-	nextTetroType = love.math.random(1, #shapes.pieceStructures)
-	tetroRotation = love.math.random(1, #shapes.pieceStructures[pieceType] - 1)
+	nextTetroType = shapes.random_type()
+	tetroRotation = 1
 end
 
 function love.keypressed(key)
