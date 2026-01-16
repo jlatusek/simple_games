@@ -1,6 +1,3 @@
-local gridXCount = 10
-local gridYCount = 18
-
 local tetrominos = require("shapes")
 local piece = require("piece")
 local conf = require("config")
@@ -14,23 +11,21 @@ local pieceX = 3
 local pieceY = 0
 local timer = 0
 local timerLimit = 0.3
-local pieceXCount = 4
-local pieceYCount = 4
 local sequence = {}
 local offsetX = 2
 local offsetY = 5
 
 local function canPieceMove(testX, testY, testRotation)
-	for y = 1, pieceYCount do
-		for x = 1, pieceXCount do
+	for y = 1, conf.pieceYCount do
+		for x = 1, conf.pieceXCount do
 			local testBlockX = testX + x
 			local testBlockY = testY + y
 			if
 				pieceStructures[pieceType][testRotation][y][x] ~= " "
 				and (
 					testBlockX < 1
-					or testBlockX > gridXCount
-					or testBlockY > gridYCount
+					or testBlockX > conf.gridXCount
+					or testBlockY > conf.gridYCount
 					or inert[testBlockY][testBlockX] ~= " "
 				)
 			then
@@ -98,8 +93,8 @@ end
 
 function love.load()
 	love.window.setMode(
-		(gridXCount + offsetX * 2) * conf.blockSize,
-		(gridYCount + offsetY * 2) * conf.blockSize,
+		(conf.gridXCount + offsetX * 2) * conf.blockSize,
+		(conf.gridYCount + offsetY * 2) * conf.blockSize,
 		{
 			resizable = true,
 			vsync = true,
@@ -114,9 +109,9 @@ function love.load()
 	newPiece()
 
 	inert = {}
-	for y = 1, gridYCount do
+	for y = 1, conf.gridYCount do
 		inert[y] = {}
-		for x = 1, gridXCount do
+		for x = 1, conf.gridXCount do
 			inert[y][x] = " "
 		end
 	end
@@ -130,8 +125,8 @@ function love.update(dt)
 		if canPieceMove(pieceX, testY, pieceRotation) then
 			pieceY = testY
 		else
-			for y = 1, pieceYCount do
-				for x = 1, pieceXCount do
+			for y = 1, conf.pieceYCount do
+				for x = 1, conf.pieceXCount do
 					local block =
 						pieceStructures[pieceType][pieceRotation][y][x]
 					if block ~= " " then
@@ -139,9 +134,9 @@ function love.update(dt)
 					end
 				end
 			end
-			for y = 1, gridYCount do
+			for y = 1, conf.gridYCount do
 				local complete = true
-				for x = 1, gridXCount do
+				for x = 1, conf.gridXCount do
 					if inert[y][x] == " " then
 						complete = false
 						break
@@ -151,13 +146,13 @@ function love.update(dt)
 				if complete then
 					print("Complete row: " .. y)
 					for removeY = y, 2, -1 do
-						for removeX = 1, gridXCount do
+						for removeX = 1, conf.gridXCount do
 							inert[removeY][removeX] =
 								inert[removeY - 1][removeX]
 						end
 					end
 
-					for removeX = 1, gridXCount do
+					for removeX = 1, conf.gridXCount do
 						inert[1][removeX] = " "
 					end
 				end
@@ -172,14 +167,14 @@ function love.update(dt)
 end
 
 function love.draw()
-	for y = 1, gridYCount do
-		for x = 1, gridXCount do
+	for y = 1, conf.gridYCount do
+		for x = 1, conf.gridXCount do
 			piece.draw(inert[y][x], x + offsetX, y + offsetY)
 		end
 	end
 
-	for y = 1, pieceYCount do
-		for x = 1, pieceXCount do
+	for y = 1, conf.pieceYCount do
+		for x = 1, conf.pieceXCount do
 			local block = pieceStructures[pieceType][pieceRotation][y][x]
 			if block ~= " " then
 				piece.draw(block, x + pieceX + offsetX, y + pieceY + offsetY)
@@ -187,8 +182,8 @@ function love.draw()
 		end
 	end
 
-	for y = 1, pieceYCount do
-		for x = 1, pieceXCount do
+	for y = 1, conf.pieceYCount do
+		for x = 1, conf.pieceXCount do
 			local block = pieceStructures[nextPieceType][1][y][x]
 			if block ~= " " then
 				piece.draw(block, x + 5, y + 1, 0.8)
@@ -196,8 +191,8 @@ function love.draw()
 		end
 	end
 
-	for y = 1, pieceYCount do
-		for x = 1, pieceXCount do
+	for y = 1, conf.pieceYCount do
+		for x = 1, conf.pieceXCount do
 			local block = pieceStructures[pieceType][pieceRotation][y][x]
 			local shadow_piece_y = 0
 			while canPieceMove(pieceX, shadow_piece_y, pieceRotation) do
