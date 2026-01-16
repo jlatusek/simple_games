@@ -5,10 +5,8 @@ local conf = require("config")
 local pieceStructures = tetrominos.pieceStructures
 local inert = {}
 local pieceType = 1
-local nextPieceType = 2
-local pieceRotation = 1
-local pieceX = 3
-local pieceY = 0
+local nextTetroType = 2
+local tetroRotation = 1
 local timer = 0
 local timerLimit = 0.3
 local sequence = {}
@@ -47,41 +45,41 @@ end
 local function newPiece()
 	pieceX = 3
 	pieceY = 0
-	pieceType = nextPieceType
-	nextPieceType = love.math.random(1, #pieceStructures)
-	pieceRotation = love.math.random(1, #pieceStructures[pieceType] - 1)
+	pieceType = nextTetroType
+	nextTetroType = love.math.random(1, #pieceStructures)
+	tetroRotation = love.math.random(1, #pieceStructures[pieceType] - 1)
 end
 
 function love.keypressed(key)
 	if key == "x" then
-		local testRotation = pieceRotation + 1
+		local testRotation = tetroRotation + 1
 		if testRotation > #pieceStructures[pieceType] then
 			testRotation = 1
 		end
 		if canPieceMove(pieceX, pieceY, testRotation) then
-			pieceRotation = testRotation
+			tetroRotation = testRotation
 		end
 	elseif key == "z" then
-		local testRotation = pieceRotation - 1
+		local testRotation = tetroRotation - 1
 		if testRotation < 1 then
 			testRotation = #pieceStructures[pieceType]
 		end
 		if canPieceMove(pieceX, pieceY, testRotation) then
-			pieceRotation = testRotation
+			tetroRotation = testRotation
 		end
 	elseif key == "c" or key == "down" then
-		while canPieceMove(pieceX, pieceY + 1, pieceRotation) do
+		while canPieceMove(pieceX, pieceY + 1, tetroRotation) do
 			pieceY = pieceY + 1
 		end
 		timer = timerLimit
 	elseif key == "left" then
 		local testX = pieceX - 1
-		if canPieceMove(testX, pieceY, pieceRotation) then
+		if canPieceMove(testX, pieceY, tetroRotation) then
 			pieceX = testX
 		end
 	elseif key == "right" then
 		local testX = pieceX + 1
-		if canPieceMove(testX, pieceY, pieceRotation) then
+		if canPieceMove(testX, pieceY, tetroRotation) then
 			pieceX = testX
 		end
 	elseif key == "q" or key == "escape" then
@@ -122,13 +120,13 @@ function love.update(dt)
 	if timer >= timerLimit then
 		timer = 0
 		local testY = pieceY + 1
-		if canPieceMove(pieceX, testY, pieceRotation) then
+		if canPieceMove(pieceX, testY, tetroRotation) then
 			pieceY = testY
 		else
 			for y = 1, conf.pieceYCount do
 				for x = 1, conf.pieceXCount do
 					local block =
-						pieceStructures[pieceType][pieceRotation][y][x]
+						pieceStructures[pieceType][tetroRotation][y][x]
 					if block ~= " " then
 						inert[pieceY + y][pieceX + x] = block
 					end
@@ -158,7 +156,7 @@ function love.update(dt)
 				end
 			end
 			newPiece()
-			if not canPieceMove(pieceX, pieceY, pieceRotation) then
+			if not canPieceMove(pieceX, pieceY, tetroRotation) then
 				love.load()
 			end
 			timer = timerLimit
@@ -175,7 +173,7 @@ function love.draw()
 
 	for y = 1, conf.pieceYCount do
 		for x = 1, conf.pieceXCount do
-			local block = pieceStructures[pieceType][pieceRotation][y][x]
+			local block = pieceStructures[pieceType][tetroRotation][y][x]
 			if block ~= " " then
 				piece.draw(block, x + pieceX + offsetX, y + pieceY + offsetY)
 			end
@@ -184,7 +182,7 @@ function love.draw()
 
 	for y = 1, conf.pieceYCount do
 		for x = 1, conf.pieceXCount do
-			local block = pieceStructures[nextPieceType][1][y][x]
+			local block = pieceStructures[nextTetroType][1][y][x]
 			if block ~= " " then
 				piece.draw(block, x + 5, y + 1, 0.8)
 			end
@@ -193,9 +191,9 @@ function love.draw()
 
 	for y = 1, conf.pieceYCount do
 		for x = 1, conf.pieceXCount do
-			local block = pieceStructures[pieceType][pieceRotation][y][x]
+			local block = pieceStructures[pieceType][tetroRotation][y][x]
 			local shadow_piece_y = 0
-			while canPieceMove(pieceX, shadow_piece_y, pieceRotation) do
+			while canPieceMove(pieceX, shadow_piece_y, tetroRotation) do
 				shadow_piece_y = shadow_piece_y + 1
 			end
 			shadow_piece_y = shadow_piece_y - 1
