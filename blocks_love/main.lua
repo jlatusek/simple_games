@@ -218,7 +218,7 @@ function love.draw()
 		for x = 1, pieceXCount do
 			local block = pieceStructures[nextPieceType][1][y][x]
 			if block ~= " " then
-				drawBlock("preview", x + 5, y + 1)
+				drawBlock(block, x + 5, y + 1, 0.8)
 			end
 		end
 	end
