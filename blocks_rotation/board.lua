@@ -77,13 +77,27 @@ function board.draw()
 	local tetrominoOffsetX = board.play_tetromino.x
 	local tetrominoOffsetY = board.play_tetromino.y
 
-	for y = 1, conf.gridYCount do
-		for x = 1, conf.gridXCount do
-			piece.draw(
-				board.inert[y][x],
-				x + conf.windowSize / 2 - tetrominoOffsetX,
-				y + conf.windowSize / 2 - tetrominoOffsetY
-			)
+	if board.play_tetromino.rotation == 1 then
+		for y = 1, conf.gridYCount do
+			for x = 1, conf.gridXCount do
+				piece.draw(
+					board.inert[y][x],
+					x + conf.windowSize / 2 - tetrominoOffsetX,
+					y + conf.windowSize / 2 - tetrominoOffsetY
+				)
+			end
+		end
+	end
+
+	if board.play_tetromino.rotation == 2 then
+		for y = 1, conf.gridYCount do
+			for x = 1, conf.gridXCount do
+				local x_pos = x - tetrominoOffsetX
+				local y_pos = y - tetrominoOffsetY
+				local new_x = 0 * x_pos - 1 * y_pos + conf.windowSize / 2
+				local new_y = 1 * x_pos + 0 * y_pos + conf.windowSize / 2
+				piece.draw(board.inert[y][x], new_x, new_y)
+			end
 		end
 	end
 
