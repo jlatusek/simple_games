@@ -104,19 +104,16 @@ function board.draw()
 		end
 	end
 
+	local shadow_tetro = tetromino.clone(board.play_tetromino)
+	while
+		board.checkMoveTetromino(shadow_tetro, { 0, 1 }, shadow_tetro.rotation)
+	do
+	end
+
 	for y = 1, conf.pieceYCount do
 		for x = 1, conf.pieceXCount do
 			local block =
-				shapes.pieceStructures[board.play_tetromino.type][board.play_tetromino.rotation][y][x]
-            local shadow_tetro = tetromino.clone(board.play_tetromino)
-			while
-				board.checkMoveTetromino(
-					shadow_tetro,
-					{ 0, 1 },
-					shadow_tetro.rotation
-				)
-			do
-			end
+				shapes.pieceStructures[shadow_tetro.type][shadow_tetro.rotation][y][x]
 			if block ~= " " then
 				piece.draw(
 					block,

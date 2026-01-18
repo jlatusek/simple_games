@@ -5,31 +5,45 @@ local board = require("board")
 local timerLimit = 0.3
 
 function love.keypressed(key)
-	if key == "x" then
+	if key == conf.keys.rotateRight then
 		local testRotation = board.play_tetromino.rotation + 1
-		if testRotation > #shapes.pieceStructures[board.play_tetromino.type] then
+		if
+			testRotation > #shapes.pieceStructures[board.play_tetromino.type]
+		then
 			testRotation = 1
 		end
 		board.checkMoveTetromino(board.play_tetromino, { 0, 0 }, testRotation)
-	elseif key == "z" then
+	elseif key == conf.keys.rotateLeft then
 		local testRotation = board.play_tetromino.rotation - 1
 		if testRotation < 1 then
 			testRotation = #shapes.pieceStructures[board.play_tetromino.type]
 		end
 		board.checkMoveTetromino(board.play_tetromino, { 0, 0 }, testRotation)
-	elseif key == "c" or key == "down" then
+	elseif key == conf.keys.hardDrop then
 		while
-			board.checkMoveTetromino(board.play_tetromino, { 0, 1 }, board.play_tetromino.rotation)
+			board.checkMoveTetromino(
+				board.play_tetromino,
+				{ 0, 1 },
+				board.play_tetromino.rotation
+			)
 		do
 		end
 		board.timer = timerLimit
-	elseif key == "left" then
-		board.checkMoveTetromino(board.play_tetromino, { -1, 0 }, board.play_tetromino.rotation)
-	elseif key == "right" then
-		board.checkMoveTetromino(board.play_tetromino, { 1, 0 }, board.play_tetromino.rotation)
-	elseif key == "q" or key == "escape" then
+	elseif key == conf.keys.left then
+		board.checkMoveTetromino(
+			board.play_tetromino,
+			{ -1, 0 },
+			board.play_tetromino.rotation
+		)
+	elseif key == conf.keys.right then
+		board.checkMoveTetromino(
+			board.play_tetromino,
+			{ 1, 0 },
+			board.play_tetromino.rotation
+		)
+	elseif key == conf.keys.quit then
 		love.event.quit()
-	elseif key == "r" then
+	elseif key == conf.keys.restart then
 		love.event.quit("restart")
 	end
 end

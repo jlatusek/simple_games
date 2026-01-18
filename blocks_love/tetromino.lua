@@ -30,28 +30,4 @@ function tetromino.clone(tetro)
     return clone
 end
 
-function tetromino:canMove(direction_x, direction_y, testRotation, grid)
-	local testX = self.x + direction_x
-	local testY = self.y + direction_y
-
-	for y = 1, conf.pieceYCount do
-		for x = 1, conf.pieceXCount do
-			local testBlockX = testX + x
-			local testBlockY = testY + y
-			if
-				shapes.pieceStructures[self.type][testRotation][y][x] ~= " "
-				and (
-					testBlockX < 1
-					or testBlockX > conf.gridXCount
-					or testBlockY > conf.gridYCount
-					or grid[testBlockY][testBlockX] ~= " "
-				)
-			then
-				return false
-			end
-		end
-	end
-	return true
-end
-
 return tetromino
