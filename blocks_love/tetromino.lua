@@ -22,12 +22,12 @@ end
 ---comment
 ---@param tetro Tetromino
 function tetromino.clone(tetro)
-    local self = setmetatable({}, tetromino)
-    self.x = tetro.x
-    self.y = tetro.y
-    self.type = tetro.type
-    self.rotation = tetro.rotation
-    return self
+    local clone = setmetatable({}, tetromino)
+    clone.x = tetro.x
+    clone.y = tetro.y
+    clone.type = tetro.type
+    clone.rotation = tetro.rotation
+    return clone
 end
 
 function tetromino:canMove(direction_x, direction_y, testRotation, grid)
