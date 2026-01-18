@@ -127,11 +127,10 @@ function board.draw()
 end
 
 ---comment
----@param timerLimit any
----@param dt any
-function board.time_tick(timerLimit, dt)
+---@param dt number
+function board.time_tick(dt)
 	board.timer = board.timer + dt
-	if board.timer >= timerLimit then
+	if board.timer >= conf.timerLimit then
 		board.timer = 0
 		if
 			not board.checkMoveTetromino(
@@ -183,8 +182,54 @@ function board.time_tick(timerLimit, dt)
 			then
 				love.load()
 			end
-			board.timer = timerLimit
+			board.timer = conf.timerLimit
 		end
+	end
+end
+
+---comment
+---@param key string
+function board.keypressed(key)
+	if key == conf.keys.rotateRight then
+		local testRotation = board.play_tetromino.rotation + 1
+		if
+			testRotation > #shapes.pieceStructures[board.play_tetromino.type]
+		then
+			testRotation = 1
+		end
+		board.checkMoveTetromino(board.play_tetromino, { 0, 0 }, testRotation)
+	elseif key == conf.keys.rotateLeft then
+		local testRotation = board.play_tetromino.rotation - 1
+		if testRotation < 1 then
+			testRotation = #shapes.pieceStructures[board.play_tetromino.type]
+		end
+		board.checkMoveTetromino(board.play_tetromino, { 0, 0 }, testRotation)
+	elseif key == conf.keys.hardDrop then
+		while
+			board.checkMoveTetromino(
+				board.play_tetromino,
+				{ 0, 1 },
+				board.play_tetromino.rotation
+			)
+		do
+		end
+		board.timer = conf.timerLimit
+	elseif key == conf.keys.left then
+		board.checkMoveTetromino(
+			board.play_tetromino,
+			{ -1, 0 },
+			board.play_tetromino.rotation
+		)
+	elseif key == conf.keys.right then
+		board.checkMoveTetromino(
+			board.play_tetromino,
+			{ 1, 0 },
+			board.play_tetromino.rotation
+		)
+	elseif key == conf.keys.quit then
+		love.event.quit()
+	elseif key == conf.keys.restart then
+		love.event.quit("restart")
 	end
 end
 

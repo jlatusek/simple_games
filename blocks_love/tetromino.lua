@@ -6,9 +6,6 @@
 local tetromino = {}
 tetromino.__index = tetromino
 
-local conf = require("config")
-local shapes = require("shapes")
-
 function tetromino.new(type)
 	local self = setmetatable({}, tetromino)
 	self.x = 3
@@ -18,16 +15,15 @@ function tetromino.new(type)
 	return self
 end
 
-
 ---comment
 ---@param tetro Tetromino
 function tetromino.clone(tetro)
-    local clone = setmetatable({}, tetromino)
-    clone.x = tetro.x
-    clone.y = tetro.y
-    clone.type = tetro.type
-    clone.rotation = tetro.rotation
-    return clone
+	local clone = setmetatable({}, tetromino)
+	clone.x = tetro.x
+	clone.y = tetro.y
+	clone.type = tetro.type
+	clone.rotation = tetro.rotation
+	return clone
 end
 
 return tetromino

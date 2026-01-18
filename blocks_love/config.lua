@@ -7,6 +7,7 @@ M.gridXCount = 10
 M.gridYCount = 18
 M.offsetX = 2
 M.offsetY = 5
+M.timerLimit = 0.3
 
 M.keys = {
 	rotateLeft = "z",

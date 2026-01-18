@@ -1,51 +1,8 @@
-local shapes = require("shapes")
 local conf = require("config")
 local board = require("board")
 
-local timerLimit = 0.3
-
 function love.keypressed(key)
-	if key == conf.keys.rotateRight then
-		local testRotation = board.play_tetromino.rotation + 1
-		if
-			testRotation > #shapes.pieceStructures[board.play_tetromino.type]
-		then
-			testRotation = 1
-		end
-		board.checkMoveTetromino(board.play_tetromino, { 0, 0 }, testRotation)
-	elseif key == conf.keys.rotateLeft then
-		local testRotation = board.play_tetromino.rotation - 1
-		if testRotation < 1 then
-			testRotation = #shapes.pieceStructures[board.play_tetromino.type]
-		end
-		board.checkMoveTetromino(board.play_tetromino, { 0, 0 }, testRotation)
-	elseif key == conf.keys.hardDrop then
-		while
-			board.checkMoveTetromino(
-				board.play_tetromino,
-				{ 0, 1 },
-				board.play_tetromino.rotation
-			)
-		do
-		end
-		board.timer = timerLimit
-	elseif key == conf.keys.left then
-		board.checkMoveTetromino(
-			board.play_tetromino,
-			{ -1, 0 },
-			board.play_tetromino.rotation
-		)
-	elseif key == conf.keys.right then
-		board.checkMoveTetromino(
-			board.play_tetromino,
-			{ 1, 0 },
-			board.play_tetromino.rotation
-		)
-	elseif key == conf.keys.quit then
-		love.event.quit()
-	elseif key == conf.keys.restart then
-		love.event.quit("restart")
-	end
+	board.keypressed(key)
 end
 
 function love.load()
@@ -66,7 +23,7 @@ function love.load()
 end
 
 function love.update(dt)
-	board.time_tick(timerLimit, dt)
+	board.time_tick(dt)
 end
 
 function love.draw()
