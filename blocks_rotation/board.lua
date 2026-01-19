@@ -2,6 +2,7 @@ local conf = require("config")
 local shapes = require("shapes")
 local piece = require("piece")
 local tetromino = require("tetromino")
+local matrix = require("matrix")
 
 local board = {}
 board.__index = board
@@ -89,22 +90,26 @@ function board.draw()
 		end
 	end
 
-	if board.play_tetromino.rotation == 2 then
-		for y = 1, conf.gridYCount do
-			for x = 1, conf.gridXCount do
-				local x_pos = x - tetrominoOffsetX
-				local y_pos = y - tetrominoOffsetY
-				local new_x = 0 * x_pos - 1 * y_pos + conf.windowSize / 2
-				local new_y = 1 * x_pos + 0 * y_pos + conf.windowSize / 2
-				piece.draw(board.inert[y][x], new_x, new_y)
-			end
+	local rotation_matrix =
+		matrix.rotation_matrix[board.play_tetromino.rotation]
+	for y = 1, conf.gridYCount do
+		for x = 1, conf.gridXCount do
+			local x_pos = x - tetrominoOffsetX
+			local y_pos = y - tetrominoOffsetY
+			local new_x = rotation_matrix[1][1] * x_pos
+				- rotation_matrix[1][2] * y_pos
+				+ conf.windowSize / 2
+			local new_y = rotation_matrix[2][1] * x_pos
+				+ rotation_matrix[2][2] * y_pos
+				+ conf.windowSize / 2
+			piece.draw(board.inert[y][x], new_x, new_y)
 		end
 	end
 
 	for y = 1, conf.pieceYCount do
 		for x = 1, conf.pieceXCount do
 			local block =
-				shapes.pieceStructures[board.play_tetromino.type][board.play_tetromino.rotation][y][x]
+				shapes.pieceStructures[board.play_tetromino.type][1][y][x]
 			if block ~= " " then
 				piece.draw(
 					block,
