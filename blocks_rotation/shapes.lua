@@ -186,7 +186,8 @@ M.pieceStructures = {
 	},
 }
 
---@type fun(): int
+---Get random piece
+---@return number
 function M.random_type()
 	return love.math.random(1, #M.pieceStructures)
 end
