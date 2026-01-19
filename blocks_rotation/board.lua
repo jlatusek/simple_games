@@ -75,7 +75,102 @@ function board.checkMoveTetromino(tetro, direction, testRotation)
 	end
 	return canMove
 end
+
 function board.draw()
+	board.draw_manual()
+end
+
+---comment
+---@param gridX number location of piece in grid coordinates
+---@param gridY number location of piece in grid coordinates
+---@param pivotX number location of center around which make rotation
+---@param pivotY number location of center around which make rotation
+---@param rotation number how much to rotate
+local function translate(gridX, gridY, pivotX, pivotY, rotation)
+	local px = gridX * conf.blockSize
+	local py = gridY * conf.blockSize
+
+	-- defines how far we are from the pivot, in other terms it defines coordinates related to pivot
+	local dx = px - pivotX
+	local dy = py - pivotY
+
+	local rx, ry = coordinates.rotate(dx, dy, rotation)
+    return love.graphics.getWidth() / 2 + rx, love.graphics.getHeight() / 2 + ry
+end
+
+function board.draw_manual()
+	local rot = board.play_tetromino.rotation
+
+	local pivotGridX = conf.offset
+		+ board.play_tetromino.x
+		+ conf.pieceXCount / 2
+	local pivotGridY = conf.offset
+		+ board.play_tetromino.y
+		+ conf.pieceYCount / 2
+	local pivotX = pivotGridX * conf.blockSize
+	local pivotY = pivotGridY * conf.blockSize
+
+	for y = 1, conf.gridYCount do
+		for x = 1, conf.gridXCount do
+			local sx, sy =
+				translate(x + conf.offset, y + conf.offset, pivotX, pivotY, rot)
+			piece.draw_raw(board.inert[y][x], sx, sy)
+		end
+	end
+
+	local shadow_tetro = tetromino.clone(board.play_tetromino)
+	while
+		board.checkMoveTetromino(shadow_tetro, { 0, 1 }, shadow_tetro.rotation)
+	do
+	end
+
+	for y = 1, conf.pieceYCount do
+		for x = 1, conf.pieceXCount do
+			local block =
+				shapes.pieceStructures[shadow_tetro.type][shadow_tetro.rotation][y][x]
+			if block ~= " " then
+				local sx, sy = translate(
+					x + shadow_tetro.x + conf.offset,
+					y + shadow_tetro.y + conf.offset,
+					pivotX,
+					pivotY,
+					rot
+				)
+				piece.draw_raw(block, sx, sy, 0.4)
+			end
+		end
+	end
+
+	for y = 1, conf.pieceYCount do
+		for x = 1, conf.pieceXCount do
+			local block =
+				shapes.pieceStructures[board.play_tetromino.type][board.play_tetromino.rotation][y][x]
+			if block ~= " " then
+				local sx, sy = translate(
+					x + board.play_tetromino.x + conf.offset,
+					y + board.play_tetromino.y + conf.offset,
+					pivotX,
+					pivotY,
+					rot
+				)
+				piece.draw_raw(block, sx, sy, 0.4)
+			end
+		end
+	end
+
+	love.graphics.print("NEXT", 20, 10, 0, 3, 3)
+	for y = 1, conf.pieceYCount do
+		for x = 1, conf.pieceXCount do
+			local block =
+				shapes.pieceStructures[board.nextTetromino.type][1][y][x]
+			if block ~= " " then
+				piece.draw(block, x + 1, y + 1, 0.8)
+			end
+		end
+	end
+end
+
+function board.draw_lua_rotation()
 	local width = love.graphics.getWidth()
 	local height = love.graphics.getHeight()
 	local rot = board.play_tetromino.rotation

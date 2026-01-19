@@ -16,14 +16,21 @@ local colors = {
 }
 
 function M.draw(block, x, y, transparency)
-	local c = colors[block]
-
-	love.graphics.setColor(c[1], c[2], c[3], transparency or 1)
-
-	love.graphics.rectangle(
-		"fill",
+	M.draw_raw(
+		block,
 		(x - 1) * conf.blockSize,
 		(y - 1) * conf.blockSize,
+		transparency
+	)
+end
+
+function M.draw_raw(block, x, y, transparency)
+	local c = colors[block]
+	love.graphics.setColor(c[1], c[2], c[3], transparency or 1)
+	love.graphics.rectangle(
+		"fill",
+		x - conf.blockSize / 2,
+		y - conf.blockSize / 2,
 		conf.blockDrawSize,
 		conf.blockDrawSize
 	)
