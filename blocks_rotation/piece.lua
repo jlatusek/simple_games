@@ -16,10 +16,9 @@ local colors = {
 }
 
 function M.draw(block, x, y, transparency)
-	local color = colors[block]
-	table.insert(color, transparency or 1)
+	local c = colors[block]
 
-	love.graphics.setColor(color)
+	love.graphics.setColor(c[1], c[2], c[3], transparency or 1)
 
 	love.graphics.rectangle(
 		"fill",
