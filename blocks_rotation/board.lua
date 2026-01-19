@@ -12,9 +12,12 @@ board.play_tetromino = nil
 board.nextTetromino = nil
 
 local function newTetro()
+	local tmp = board.play_tetromino
 	board.play_tetromino = board.nextTetromino
 		or tetromino.new(shapes.random_type())
 	board.nextTetromino = tetromino.new(shapes.random_type())
+	board.play_tetromino.rotation = tmp and tmp.rotation
+		or board.play_tetromino.rotation
 end
 
 function board.init()
