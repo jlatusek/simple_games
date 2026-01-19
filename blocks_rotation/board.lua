@@ -2,7 +2,7 @@ local conf = require("config")
 local shapes = require("shapes")
 local piece = require("piece")
 local tetromino = require("tetromino")
-local matrix = require("matrix")
+local coordinates = require("coordinates")
 
 local board = {}
 board.__index = board
@@ -90,19 +90,18 @@ function board.draw()
 		end
 	end
 
-	local rotation_matrix =
-		matrix.rotation_matrix[board.play_tetromino.rotation]
 	for y = 1, conf.gridYCount do
 		for x = 1, conf.gridXCount do
-			local x_pos = x - tetrominoOffsetX
-			local y_pos = y - tetrominoOffsetY
-			local new_x = rotation_matrix[1][1] * x_pos
-				- rotation_matrix[1][2] * y_pos
-				+ conf.windowSize / 2
-			local new_y = rotation_matrix[2][1] * x_pos
-				+ rotation_matrix[2][2] * y_pos
-				+ conf.windowSize / 2
-			piece.draw(board.inert[y][x], new_x, new_y)
+			local ix, iy = coordinates.rotate(
+				x - tetrominoOffsetX,
+				y - tetrominoOffsetY,
+				board.play_tetromino.rotation
+			)
+			piece.draw(
+				board.inert[y][x],
+				ix + conf.windowSize / 2,
+				iy + conf.windowSize / 2
+			)
 		end
 	end
 
