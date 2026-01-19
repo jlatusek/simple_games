@@ -75,32 +75,21 @@ end
 
 ---Function to draw all blocks creating tetris game
 function board.draw()
-	local tetrominoOffsetX = board.play_tetromino.x
-	local tetrominoOffsetY = board.play_tetromino.y
-
-	if board.play_tetromino.rotation == 1 then
-		for y = 1, conf.gridYCount do
-			for x = 1, conf.gridXCount do
-				piece.draw(
-					board.inert[y][x],
-					x + conf.windowSize / 2 - tetrominoOffsetX,
-					y + conf.windowSize / 2 - tetrominoOffsetY
-				)
-			end
-		end
-	end
+	local tetrominoOffsetX = 0 --- board.play_tetromino.x
+	local tetrominoOffsetY = 0 --- board.play_tetromino.y
 
 	for y = 1, conf.gridYCount do
 		for x = 1, conf.gridXCount do
-			local ix, iy = coordinates.rotate(
-				x - tetrominoOffsetX,
-				y - tetrominoOffsetY,
+            local ix, iy = coordinates.tableToGridIndex(x, y)
+			local iix, iiy = coordinates.rotate(
+				ix - tetrominoOffsetX,
+				iy - tetrominoOffsetY,
 				board.play_tetromino.rotation
 			)
 			piece.draw(
 				board.inert[y][x],
-				ix + conf.windowSize / 2,
-				iy + conf.windowSize / 2
+				iix + conf.windowSize / 2,
+				iiy + conf.windowSize / 2
 			)
 		end
 	end

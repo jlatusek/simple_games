@@ -6,8 +6,9 @@ function love.keypressed(key)
 end
 
 function love.load()
-    conf.windowSize = conf.gridXCount > conf.gridYCount and conf.gridXCount or conf.gridYCount
-    conf.windowSize = conf.windowSize + conf.offset * 2
+	conf.windowSize = conf.gridXCount > conf.gridYCount and conf.gridXCount
+		or conf.gridYCount
+	conf.windowSize = conf.windowSize + conf.offset * 2
 	love.window.setMode(
 		conf.windowSize * conf.blockSize,
 		conf.windowSize * conf.blockSize,
