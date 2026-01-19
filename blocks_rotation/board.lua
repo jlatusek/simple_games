@@ -75,80 +75,45 @@ function board.checkMoveTetromino(tetro, direction, testRotation)
 	end
 	return canMove
 end
-
----Function to draw all blocks creating tetris game
 function board.draw()
-	local tetrominoOffsetX = 0 --- board.play_tetromino.x
-	local tetrominoOffsetY = 0 --- board.play_tetromino.y
+	local width = love.graphics.getWidth()
+	local height = love.graphics.getHeight()
+	local rot = board.play_tetromino.rotation
 
+	love.graphics.push()
+
+	-- 1. Move to Screen Center
+	love.graphics.translate(width / 2, height / 2)
+
+	-- 2. Rotate the world opposite to the piece rotation
+	-- (Rot 1=0deg, 2=90deg, etc.)
+	local angle = (rot - 1) * (math.pi / 2)
+	love.graphics.rotate(-angle)
+
+	-- 3. Calculate Center of the Current Piece (in Pixels)
+	-- We add pieceXCount/2 * blockSize to find the middle of the 4x4 block
+	local piecePixelX = (board.play_tetromino.x + conf.offset - 1)
+		* conf.blockSize
+	local piecePixelY = (board.play_tetromino.y + conf.offset - 1)
+		* conf.blockSize
+
+	local centerOffsetX = (conf.pieceXCount * conf.blockSize) / 2
+	local centerOffsetY = (conf.pieceYCount * conf.blockSize) / 2
+
+	-- 4. Shift world back so the piece center matches the screen center
+	love.graphics.translate(
+		-(piecePixelX + centerOffsetX),
+		-(piecePixelY + centerOffsetY)
+	)
+
+	-- A. Draw Grid
 	for y = 1, conf.gridYCount do
 		for x = 1, conf.gridXCount do
-            local ix, iy = coordinates.tableToGridIndex(x, y)
-			local iix, iiy = coordinates.rotate(
-				ix - tetrominoOffsetX,
-				iy - tetrominoOffsetY,
-				board.play_tetromino.rotation
-			)
-			piece.draw(
-				board.inert[y][x],
-				iix + conf.windowSize / 2,
-				iiy + conf.windowSize / 2
-			)
+			piece.draw(board.inert[y][x], x + conf.offset, y + conf.offset)
 		end
 	end
 
-	for y = 1, conf.pieceYCount do
-		for x = 1, conf.pieceXCount do
-			local block =
-				shapes.pieceStructures[board.play_tetromino.type][1][y][x]
-			if block ~= " " then
-				piece.draw(
-					block,
-					conf.windowSize / 2 + x,
-					conf.windowSize / 2 + y
-				)
-			end
-		end
-	end
-
-	-- for y = 1, conf.gridYCount do
-	-- 	for x = 1, conf.gridXCount do
-	-- 		piece.draw(board.inert[y][x], x + conf.offset, y + conf.offset)
-	-- 	end
-	-- end
-end
-
-function board.normalDraw()
-	for y = 1, conf.gridYCount do
-		for x = 1, conf.gridXCount do
-			piece.draw(board.inert[y][x], x + conf.offsetX, y + conf.offsetY)
-		end
-	end
-
-	for y = 1, conf.pieceYCount do
-		for x = 1, conf.pieceXCount do
-			local block =
-				shapes.pieceStructures[board.play_tetromino.type][board.play_tetromino.rotation][y][x]
-			if block ~= " " then
-				piece.draw(
-					block,
-					x + board.play_tetromino.x + conf.offsetX,
-					y + board.play_tetromino.y + conf.offsetY
-				)
-			end
-		end
-	end
-
-	for y = 1, conf.pieceYCount do
-		for x = 1, conf.pieceXCount do
-			local block =
-				shapes.pieceStructures[board.nextTetromino.type][1][y][x]
-			if block ~= " " then
-				piece.draw(block, x + 5, y + 1, 0.8)
-			end
-		end
-	end
-
+	-- B. Draw Shadow
 	local shadow_tetro = tetromino.clone(board.play_tetromino)
 	while
 		board.checkMoveTetromino(shadow_tetro, { 0, 1 }, shadow_tetro.rotation)
@@ -162,10 +127,38 @@ function board.normalDraw()
 			if block ~= " " then
 				piece.draw(
 					block,
-					x + shadow_tetro.x + conf.offsetX,
-					y + shadow_tetro.y + conf.offsetY,
+					x + shadow_tetro.x + conf.offset,
+					y + shadow_tetro.y + conf.offset,
 					0.4
 				)
+			end
+		end
+	end
+
+	-- C. Draw Active Piece
+	for y = 1, conf.pieceYCount do
+		for x = 1, conf.pieceXCount do
+			local block =
+				shapes.pieceStructures[board.play_tetromino.type][board.play_tetromino.rotation][y][x]
+			if block ~= " " then
+				piece.draw(
+					block,
+					x + board.play_tetromino.x + conf.offset,
+					y + board.play_tetromino.y + conf.offset
+				)
+			end
+		end
+	end
+
+	love.graphics.pop()
+	love.graphics.print("NEXT", 20, 10, 0, 3, 3)
+	for y = 1, conf.pieceYCount do
+		for x = 1, conf.pieceXCount do
+			local block =
+				shapes.pieceStructures[board.nextTetromino.type][1][y][x]
+			if block ~= " " then
+				-- Draw at a fixed position on screen (e.g., top left)
+				piece.draw(block, x + 1, y + 1, 0.8)
 			end
 		end
 	end
